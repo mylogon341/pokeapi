@@ -29,7 +29,7 @@ class BasePokemon {
     constructor(body) {
         this.id = body.id
         this.moves = body.moves.map(m => new Move(m))
-        this.name = body.name
+        this.name = capitalizeFirstLetter(body.name)
         this.species_url = body.species.url
         this.official_artwork = body.sprites.other["official-artwork"]["front_default"]
         this.stats = body.stats.map(s => new Stats(s))
@@ -59,7 +59,6 @@ class Chain {
     to: Chain[]
     species: BasicPokemon
     constructor(body) {
-
         this.to = body.evolves_to.map(t => new Chain(t))
         this.species = new BasicPokemon(body.species)
     }
