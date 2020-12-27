@@ -16,5 +16,7 @@ module.exports = {
         "@typescript-eslint"
     ],
     "rules": {
+        "@typescript-eslint/no-explicit-any": "warning",
+        "@typescript-eslint/no-unsafe-assignment": "warning"
     }
 };
