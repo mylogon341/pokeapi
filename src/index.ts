@@ -3,15 +3,12 @@ import { listAll, pokemon } from "./requests"
 const app = express();
 const port = 8080; // default port to listen
 
-app.get("/sprite-url", (_, res) => {
+app.get("/image-urls", (_, res) => {
   res.json(
-    {"baseurl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$.png"}
-  )
-})
-
-app.get("/larger-image", (_, res) => {
-  res.json(
-    {"baseurl": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$.png"}
+    {
+      "main_image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$.png",
+      "sprite_image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$.png"
+    }
   )
 })
 
