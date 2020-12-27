@@ -32,7 +32,7 @@ class BasePokemon {
         this.name = body.name
         this.species_url = body.species.url
         this.official_artwork = body.sprites.other["official-artwork"]["front_default"]
-        this.stats = body.stats
+        this.stats = body.stats.map(s => new Stats(s))
         this.types = body.types.map(t => new Type(t))
     }
 }
