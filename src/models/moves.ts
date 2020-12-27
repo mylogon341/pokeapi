@@ -1,3 +1,5 @@
+import { capitalizeFirstLetter } from "../Helpers"
+
 class GameVar {
     version_name: string
     level_learned_at: number
@@ -15,8 +17,7 @@ export class Move {
     game_variants: GameVar[]
 
     constructor(data) {
-        this.name = data.move.name
-
+        this.name = capitalizeFirstLetter(data.move.name)
         const groupDetails: { string: any }[] = data["version_group_details"]
         this.game_variants = groupDetails.map(g => new GameVar(g))
     }
