@@ -1,6 +1,6 @@
 import { Move } from "./moves"
 import { Stats } from "./stats"
-import { capitalizeFirstLetter } from "../Helpers"
+import { capitalizeFirstLetter, versionNumberFromUrl } from "../Helpers"
 import { Type } from "./types"
 
 class BasicPokemon {
@@ -11,9 +11,7 @@ class BasicPokemon {
 
         this.name = capitalizeFirstLetter(body.name)
         this.url = body.url
-
-        const splits = body.url.split("/")
-        this.index = Number(splits[splits.length - 2])
+        this.index = versionNumberFromUrl(body.url)
     }
 }
 

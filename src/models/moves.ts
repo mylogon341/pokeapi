@@ -1,14 +1,16 @@
-import { capitalizeFirstLetter } from "../Helpers"
+import { capitalizeFirstLetter, versionNumberFromUrl } from "../Helpers"
 
 class GameVar {
     version_name: string
     version_url: string
+    version_number: number
     level_learned_at: number
     learned_via: string
 
     constructor(data: { string: any }) {
-        this.version_name = data["version_group"].name
+        this.version_name = capitalizeFirstLetter(data["version_group"].name)
         this.version_url = data["version_group"].url
+        this.version_number = versionNumberFromUrl(this.version_url)
         this.level_learned_at = Number(data["level_learned_at"])
         this.learned_via = data["move_learn_method"].name
     }
