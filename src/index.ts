@@ -15,11 +15,11 @@ app.get("/image-urls", (_, res) => {
 
 app.get("/type-charts", (_, res) => {
   res.json(
-    {[
+    [
       new Image("https://img.pokemondb.net/images/typechart-gen1.png", "Gen 1"),
       new Image("https://img.pokemondb.net/images/typechart-gen2345.png", "Gen 2 - 5"),
       new Image("https://img.pokemondb.net/images/typechart.png", "Gen 6+")
-    ]}
+    ]
   )
 })
 
