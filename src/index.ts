@@ -1,5 +1,6 @@
 import express from "express";
 import { listAll, pokemon } from "./requests"
+import { Image } from "./models/image"
 const app = express();
 const port = 8080; // default port to listen
 
@@ -9,6 +10,16 @@ app.get("/image-urls", (_, res) => {
       "main_image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$.png",
       "sprite_image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$.png"
     }
+  )
+})
+
+app.get("/type-charts", (_, res) => {
+  res.json(
+    {[
+      new Image("https://img.pokemondb.net/images/typechart-gen1.png", "Gen 1"),
+      new Image("https://img.pokemondb.net/images/typechart-gen2345.png", "Gen 2 - 5"),
+      new Image("https://img.pokemondb.net/images/typechart.png", "Gen 6+")
+    ]}
   )
 })
 
