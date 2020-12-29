@@ -2,11 +2,13 @@ import { capitalizeFirstLetter } from "../Helpers"
 
 class GameVar {
     version_name: string
+    version_url: string
     level_learned_at: number
     learned_via: string
 
     constructor(data: { string: any }) {
         this.version_name = data["version_group"].name
+        this.version_url = data["version_group"].url
         this.level_learned_at = Number(data["level_learned_at"])
         this.learned_via = data["move_learn_method"].name
     }
