@@ -1,1 +1,0 @@
-{"version":3,"file":"stats.js","sourceRoot":"","sources":["../../src/models/stats.ts"],"names":[],"mappings":";;;AAAA,wCAAkD;AAElD,MAAa,KAAK;IAGd,6EAA6E;IAC7E,YAAY,IAAI;QACZ,IAAI,CAAC,IAAI,GAAG,+BAAqB,CAAC,IAAI,CAAC,IAAI,CAAC,IAAI,CAAC,CAAA;QACjD,IAAI,CAAC,KAAK,GAAG,IAAI,CAAC,SAAS,CAAA;IAC/B,CAAC;CACJ;AARD,sBAQC"}
