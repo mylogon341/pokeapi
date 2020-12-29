@@ -2,14 +2,14 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BasePokemon = exports.EvolutionChain = exports.PokemonSpecies = exports.Pokemon = exports.BasicPokemon = void 0;
 const moves_1 = require("./moves");
+const stats_1 = require("./stats");
 const Helpers_1 = require("../Helpers");
 const types_1 = require("./types");
 class BasicPokemon {
     constructor(body) {
         this.name = Helpers_1.capitalizeFirstLetter(body.name);
         this.url = body.url;
-        const splits = body.url.split("/");
-        this.index = Number(splits[splits.length - 2]);
+        this.index = Helpers_1.versionNumberFromUrl(body.url);
     }
 }
 exports.BasicPokemon = BasicPokemon;
@@ -17,11 +17,17 @@ class BasePokemon {
     constructor(body) {
         this.id = body.id;
         this.moves = body.moves.map(m => new moves_1.Move(m));
-        this.name = body.name;
+        this.name = Helpers_1.capitalizeFirstLetter(body.name);
         this.species_url = body.species.url;
         this.official_artwork = body.sprites.other["official-artwork"]["front_default"];
-        this.stats = body.stats;
+        this.stats = body.stats.map(s => new stats_1.Stats(s));
         this.types = body.types.map(t => new types_1.Type(t));
+        this.abilityInfo = body.abilities.map(a => {
+            const num = Helpers_1.versionNumberFromUrl(a.ability.url);
+            const isHidden = a.is_hidden;
+            return { "id": num, "hidden": isHidden };
+        });
+        console.log("created pokemon with abilityinfo " + JSON.stringify(this.abilityInfo));
     }
 }
 exports.BasePokemon = BasePokemon;
@@ -62,10 +68,12 @@ class EvolutionChain {
 }
 exports.EvolutionChain = EvolutionChain;
 class Pokemon {
-    constructor(base, species, chain) {
+    constructor(base, species, chain, abilities) {
         this.base = base;
         this.species = species;
         this.chain = chain;
+        this.abilities = abilities;
+        console.log(`this pokemon has ${abilities.length} abilities`);
     }
 }
 exports.Pokemon = Pokemon;

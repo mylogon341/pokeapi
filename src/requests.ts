@@ -1,32 +1,59 @@
 import axios from "axios"
-import { BasicPokemon, EvolutionChain, Pokemon, PokemonSpecies, BasePokemon } from "./models/pokemon"
+import { Ability } from "./models/ability"
+import { AbilityInfo, BasicPokemon, EvolutionChain, Pokemon, PokemonSpecies, BasePokemon } from "./models/pokemon"
 
 const baseUrl = "https://pokeapi.co/api/v2/"
+
+async function getAllAbilities(infos: AbilityInfo[]): Promise<Ability[]> {
+    return new Promise((success, reject) => {
+
+        let returningValue: Ability[] = []
+        infos.forEach(info => {
+            axios.get(`${baseUrl}ability/${info.id}`)
+            .then(response => new Ability(response.data, info.hidden))
+            .then(a => returningValue.push(a))
+            .then(() => {
+
+                if (returningValue.length == infos.length) {
+                    success(returningValue)
+                }
+            })
+            .catch(err => {
+                console.log(err)
+                reject(err)
+            })
+        })
+    })
+}
 
 async function pokemon(index: string): Promise<Pokemon> {
     let basePokemon: BasePokemon
     let pokeSpecies: PokemonSpecies
-    console.log("going to call pokemon with id " + index)
+    let chainData: EvolutionChain
 
     return new Promise((success, reject) => {
         axios.get(baseUrl + "pokemon/" + index)
-        .then(body => new BasePokemon(body.data) )
-        .then(base => {
-            basePokemon = base
-            return base.species_url
-        })
-        .then(speciesUrl => axios.get(speciesUrl))
-        .then(speciesResponse => new PokemonSpecies(speciesResponse.data))
-        .then(species => {
-            pokeSpecies = species
-            return species.evolution_chain_url
-        })
-        .then(chainUrl => axios.get(chainUrl))
-        .then(chainResponse => new EvolutionChain(chainResponse.data))
-        .then(chain => success(new Pokemon(basePokemon, pokeSpecies, chain)))
-        .catch(err => {
-            console.log(err)
-            reject(err)}
+            .then(body => new BasePokemon(body.data))
+            .then(base => {
+                basePokemon = base
+                return base.species_url
+            })
+            .then(speciesUrl => axios.get(speciesUrl))
+            .then(speciesResponse => new PokemonSpecies(speciesResponse.data))
+            .then(species => {
+                pokeSpecies = species
+                return species.evolution_chain_url
+            })
+            .then(chainUrl => axios.get(chainUrl))
+            .then(chainResponse => {
+                chainData = new EvolutionChain(chainResponse.data)
+                return getAllAbilities(basePokemon.abilityInfo)
+            })
+            .then(abilities => success(new Pokemon(basePokemon, pokeSpecies, chainData, abilities)))
+            .catch(err => {
+                console.log(err)
+                reject(err)
+            }
             )
     })
 }

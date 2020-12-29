@@ -14,13 +14,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.pokemon = exports.listAll = void 0;
 const axios_1 = __importDefault(require("axios"));
+const ability_1 = require("./models/ability");
 const pokemon_1 = require("./models/pokemon");
 const baseUrl = "https://pokeapi.co/api/v2/";
+function getAllAbilities(infos) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return new Promise((success, reject) => {
+            let returningValue = [];
+            infos.forEach(info => {
+                axios_1.default.get(`${baseUrl}ability/${info.id}`)
+                    .then(response => new ability_1.Ability(response.data, info.hidden))
+                    .then(a => returningValue.push(a))
+                    .then(() => {
+                    if (returningValue.length == infos.length) {
+                        success(returningValue);
+                    }
+                })
+                    .catch(err => {
+                    console.log(err);
+                    reject(err);
+                });
+            });
+        });
+    });
+}
 function pokemon(index) {
     return __awaiter(this, void 0, void 0, function* () {
         let basePokemon;
         let pokeSpecies;
-        console.log("going to call pokemon with id " + index);
+        let chainData;
         return new Promise((success, reject) => {
             axios_1.default.get(baseUrl + "pokemon/" + index)
                 .then(body => new pokemon_1.BasePokemon(body.data))
@@ -35,8 +57,11 @@ function pokemon(index) {
                 return species.evolution_chain_url;
             })
                 .then(chainUrl => axios_1.default.get(chainUrl))
-                .then(chainResponse => new pokemon_1.EvolutionChain(chainResponse.data))
-                .then(chain => success(new pokemon_1.Pokemon(basePokemon, pokeSpecies, chain)))
+                .then(chainResponse => {
+                chainData = new pokemon_1.EvolutionChain(chainResponse.data);
+                return getAllAbilities(basePokemon.abilityInfo);
+            })
+                .then(abilities => success(new pokemon_1.Pokemon(basePokemon, pokeSpecies, chainData, abilities)))
                 .catch(err => {
                 console.log(err);
                 reject(err);

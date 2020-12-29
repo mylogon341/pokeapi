@@ -2,18 +2,21 @@ import { Move } from "./moves"
 import { Stats } from "./stats"
 import { capitalizeFirstLetter, versionNumberFromUrl } from "../Helpers"
 import { Type } from "./types"
+import { Ability } from "./ability"
 
 class BasicPokemon {
     name: string
     url: string
     index: number
     constructor(body) {
-
+        
         this.name = capitalizeFirstLetter(body.name)
         this.url = body.url
         this.index = versionNumberFromUrl(body.url)
     }
 }
+
+type AbilityInfo = {id: number, hidden: boolean}
 
 class BasePokemon {
     id: number
@@ -23,7 +26,8 @@ class BasePokemon {
     official_artwork: string
     stats: Stats[]
     types: Type[]
-
+    abilityInfo: AbilityInfo[]
+    
     constructor(body) {
         this.id = body.id
         this.moves = body.moves.map(m => new Move(m))
@@ -32,6 +36,12 @@ class BasePokemon {
         this.official_artwork = body.sprites.other["official-artwork"]["front_default"]
         this.stats = body.stats.map(s => new Stats(s))
         this.types = body.types.map(t => new Type(t))
+        this.abilityInfo = body.abilities.map(a => {
+            const num = versionNumberFromUrl(a.ability.url)
+            const isHidden = a.is_hidden
+            return {"id": num, "hidden": isHidden}
+        })
+        console.log("created pokemon with abilityinfo " + JSON.stringify(this.abilityInfo))
     }
 }
 
@@ -88,12 +98,15 @@ class Pokemon {
     base: BasePokemon
     species: PokemonSpecies
     chain: EvolutionChain
+    abilities: Ability[]
 
-    constructor(base: BasePokemon, species: PokemonSpecies, chain: EvolutionChain) {
+    constructor(base: BasePokemon, species: PokemonSpecies, chain: EvolutionChain, abilities: Ability[]) {
         this.base = base
         this.species = species
         this.chain = chain
+        this.abilities = abilities
+        console.log(`this pokemon has ${abilities.length} abilities`)
     }
 }
 
-export { BasicPokemon, Pokemon, PokemonSpecies, EvolutionChain, BasePokemon }
+export { BasicPokemon, Pokemon, PokemonSpecies, EvolutionChain, BasePokemon, AbilityInfo }
