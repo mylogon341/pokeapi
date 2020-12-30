@@ -4,10 +4,10 @@ export class Ability {
     description: string
     generation: number
     name: string
-    isHidden: boolean
+    is_hidden: boolean
 
     constructor(data, isHidden: boolean) {
-        this.isHidden = isHidden
+        this.is_hidden = isHidden
         this.name = capitalizeFirstLetter(data.name)
         this.generation = versionNumberFromUrl(data.generation.url)
         console.log(this.name)

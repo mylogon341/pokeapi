@@ -105,7 +105,6 @@ class Pokemon {
         this.species = species
         this.chain = chain
         this.abilities = abilities
-        console.log(`this pokemon has ${abilities.length} abilities`)
     }
 }
 
