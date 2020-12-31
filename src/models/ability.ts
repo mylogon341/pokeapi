@@ -1,6 +1,7 @@
 import { capitalizeFirstLetter, versionNumberFromUrl } from "../Helpers"
 
 export class Ability {
+    flavour_text: string
     description: string
     generation: number
     name: string
@@ -12,7 +13,12 @@ export class Ability {
         this.id = data.id
         this.name = capitalizeFirstLetter(data.name)
         this.generation = versionNumberFromUrl(data.generation.url)
-        console.log(this.name)
+
+        const flavours = data.flavour_text_entries.filter(f => f.language.name == "en")
+        if (flavours.length > 0) {
+            this.flavour_text = flavours[0].flavor_text
+        }
+
         const entries = data.effect_entries.filter(i => i.language.name === "en")
         if (entries.length > 0) {
             this.description = entries[0].effect
