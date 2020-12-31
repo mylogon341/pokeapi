@@ -14,9 +14,10 @@ export class Ability {
         this.name = capitalizeFirstLetter(data.name)
         this.generation = versionNumberFromUrl(data.generation.url)
 
-        const flavours = data.flavour_text_entries.filter(f => f.language.name == "en")
+        const flavours = data.flavor_text_entries.filter(f => f.language.name == "en")
         if (flavours.length > 0) {
-            this.flavour_text = flavours[0].flavor_text
+            const flavourText: string = flavours[0].flavor_text
+            this.flavour_text = flavourText.replace("\n", " ")
         }
 
         const entries = data.effect_entries.filter(i => i.language.name === "en")
