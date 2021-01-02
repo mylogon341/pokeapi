@@ -1,9 +1,8 @@
-import { capitalizeFirstLetter, versionNumberFromUrl } from "../Helpers"
+import { capitalizeFirstLetter } from "../Helpers"
 
 export class Ability {
     flavour_text: string
     description: string
-    generation: number
     name: string
     id: number
     is_hidden: boolean
@@ -12,7 +11,6 @@ export class Ability {
         this.is_hidden = isHidden
         this.id = data.id
         this.name = capitalizeFirstLetter(data.name)
-        this.generation = versionNumberFromUrl(data.generation.url)
 
         const flavours = data.flavor_text_entries.filter(f => f.language.name == "en")
         if (flavours.length > 0) {

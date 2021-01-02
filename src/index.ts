@@ -1,5 +1,5 @@
 import express from "express";
-import { listAll, pokemon } from "./requests"
+import { listAll, pokemon, getEvolutionDetails } from "./requests"
 import { Image } from "./models/image"
 const app = express();
 const port = 8080; // default port to listen
@@ -33,6 +33,12 @@ app.get("/pokemon", (req, res) => {
 app.get("/pokemon/:number", (req, res) => {
   pokemon(req.params.number)
   .then(poke => res.json(poke))
+  .catch(err => res.status(500).json(err))
+})
+
+app.get("/evolution-details/:number", (req, res) => {
+  getEvolutionDetails(req.params.number)
+  .then(detail => res.json(detail))
   .catch(err => res.status(500).json(err))
 })
 

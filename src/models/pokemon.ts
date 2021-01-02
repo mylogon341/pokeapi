@@ -4,44 +4,53 @@ import { capitalizeFirstLetter, versionNumberFromUrl } from "../Helpers"
 import { Type } from "./types"
 import { Ability } from "./ability"
 
+class Clearable {
+    clear() { }
+}
+
 class BasicPokemon {
     name: string
     url: string
     index: number
     constructor(body) {
-        
+
         this.name = capitalizeFirstLetter(body.name)
         this.url = body.url
         this.index = versionNumberFromUrl(body.url)
     }
 }
 
-type AbilityInfo = {id: number, hidden: boolean}
+type AbilityInfo = { id: number, hidden: boolean }
 
-class BasePokemon {
+class BasePokemon extends Clearable {
     id: number
     name: string
     moves: Move[]
-    species_url: string
+    species_url: string | null
     official_artwork: string
     stats: Stats[]
-    types: Type[]
-    abilityInfo: AbilityInfo[]
-    
+    types: string[]
+    ability_info: AbilityInfo[]
+
     constructor(body) {
+        super()
         this.id = body.id
         this.moves = body.moves.map(m => new Move(m))
         this.name = capitalizeFirstLetter(body.name)
         this.species_url = body.species.url
         this.official_artwork = body.sprites.other["official-artwork"]["front_default"]
         this.stats = body.stats.map(s => new Stats(s))
-        this.types = body.types.map(t => new Type(t))
-        this.abilityInfo = body.abilities.map(a => {
+        this.types = body.types.map(t => new Type(t)).map(t => t.name)
+        this.ability_info = body.abilities.map(a => {
             const num = versionNumberFromUrl(a.ability.url)
             const isHidden = a.is_hidden
-            return {"id": num, "hidden": isHidden}
+            return { "id": num, "hidden": isHidden }
         })
-        console.log("created pokemon with abilityinfo " + JSON.stringify(this.abilityInfo))
+    }
+
+    clear() {
+        this.species_url = undefined
+        this.ability_info = undefined
     }
 }
 
@@ -65,22 +74,25 @@ class PokemonSpecies {
 
 class Chain {
     to: Chain[]
+    details: any | null // let front end sort this out. no point remapping
     species: BasicPokemon
+    
     constructor(body) {
         this.to = body.evolves_to.map(t => new Chain(t))
+        this.details = body.evolution_details
         this.species = new BasicPokemon(body.species)
     }
 }
 
-function flattenChain(chains: Chain[]): BasicPokemon[] {
+function flattenChain<T>(chains: Chain[], prop: (Chain) => any): T[] {
     return chains.reduce((acc, x) => {
-        acc = acc.concat(x.species);
+        acc = acc.concat(prop(x))
         if (x.to) {
-            acc = acc.concat(flattenChain(x.to));
-            x.to = [];
+            acc = acc.concat(flattenChain(x.to, prop))
+            x.to = []
         }
         return acc;
-    }, []);
+    }, [])
 }
 
 class EvolutionChain {
@@ -89,23 +101,50 @@ class EvolutionChain {
 
     constructor(body) {
         const evo = new Chain(body.chain)
-        this.pokemons = flattenChain(evo.to)
+        this.pokemons = flattenChain<BasicPokemon>(evo.to, x => x.species)
         this.pokemons.push(evo.species)
+    }
+}
+
+interface PokeAndDetail {
+    bPokemon: BasicPokemon
+    detail: any
+}
+class EvolutionDetail {
+    detail: any
+    constructor(body, searchId: number) {
+        const evo = new Chain(body.chain)
+        const first: PokeAndDetail = {bPokemon: evo.species, detail: evo.details}
+        const deets = flattenChain<PokeAndDetail>(evo.to, (x => {
+            const pd: PokeAndDetail = {bPokemon: x.species, detail: x.details}
+            return pd
+        }))
+        deets.push(first)
+        this.detail = deets.filter(x => x.bPokemon.index == searchId)[0].detail
     }
 }
 
 class Pokemon {
     base: BasePokemon
     species: PokemonSpecies
-    chain: EvolutionChain
+    chain: BasicPokemon[]
     abilities: Ability[]
 
     constructor(base: BasePokemon, species: PokemonSpecies, chain: EvolutionChain, abilities: Ability[]) {
         this.base = base
         this.species = species
-        this.chain = chain
+        this.chain = chain.pokemons
         this.abilities = abilities
+
+        const clearCheck = (i: any): i is Clearable => i.clear !== undefined
+        const properties = [this.base, this.species, this.chain, this.abilities]
+        properties.forEach(a => {
+            if (clearCheck(a)) {
+                a.clear()
+            }
+        })
+        
     }
 }
 
-export { BasicPokemon, Pokemon, PokemonSpecies, EvolutionChain, BasePokemon, AbilityInfo }
+export { BasicPokemon, Pokemon, PokemonSpecies, EvolutionChain, EvolutionDetail, BasePokemon, AbilityInfo }

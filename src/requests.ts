@@ -1,6 +1,6 @@
 import axios from "axios"
 import { Ability } from "./models/ability"
-import { AbilityInfo, BasicPokemon, EvolutionChain, Pokemon, PokemonSpecies, BasePokemon } from "./models/pokemon"
+import { AbilityInfo, BasicPokemon, EvolutionChain, EvolutionDetail, Pokemon, PokemonSpecies, BasePokemon } from "./models/pokemon"
 
 const baseUrl = "https://pokeapi.co/api/v2/"
 
@@ -10,18 +10,17 @@ async function getAllAbilities(infos: AbilityInfo[]): Promise<Ability[]> {
         let returningValue: Ability[] = []
         infos.forEach(info => {
             axios.get(`${baseUrl}ability/${info.id}`)
-            .then(response => new Ability(response.data, info.hidden))
-            .then(a => returningValue.push(a))
-            .then(() => {
-
-                if (returningValue.length == infos.length) {
-                    success(returningValue)
-                }
-            })
-            .catch(err => {
-                console.log(err)
-                reject(err)
-            })
+                .then(response => new Ability(response.data, info.hidden))
+                .then(a => returningValue.push(a))
+                .then(() => {
+                    if (returningValue.length == infos.length) {
+                        success(returningValue)
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                    reject(err)
+                })
         })
     })
 }
@@ -47,14 +46,29 @@ async function pokemon(index: string): Promise<Pokemon> {
             .then(chainUrl => axios.get(chainUrl))
             .then(chainResponse => {
                 chainData = new EvolutionChain(chainResponse.data)
-                return getAllAbilities(basePokemon.abilityInfo)
+                return getAllAbilities(basePokemon.ability_info)
             })
             .then(abilities => success(new Pokemon(basePokemon, pokeSpecies, chainData, abilities)))
             .catch(err => {
                 console.log(err)
                 reject(err)
-            }
-            )
+            })
+    })
+}
+
+async function getEvolutionDetails(id: string): Promise<any> {
+    return new Promise((success, reject) => {
+        axios.get(`${baseUrl}pokemon/${id}`)
+            .then(body => new BasePokemon(body.data))
+            .then(base => axios.get(base.species_url))
+            .then(res => new PokemonSpecies(res.data))
+            .then(species => axios.get(species.evolution_chain_url))
+            .then(res => new EvolutionDetail(res.data, Number(id)))
+            .then(chain => success(chain.detail))
+            .catch(err => {
+                console.log(err)
+                reject(err)
+            })
     })
 }
 
@@ -70,4 +84,4 @@ async function listAll(): Promise<BasicPokemon[]> {
     })
 }
 
-export { listAll, pokemon }
+export { listAll, pokemon, getEvolutionDetails }
