@@ -1,4 +1,4 @@
-import { camelToPresentation, versionNumberFromUrl } from "../Helpers"
+import { camelToPresentation, capitalizeFirstLetter, versionNumberFromUrl } from "../Helpers"
 interface APIResource {
     name: string
     description: string
@@ -23,7 +23,7 @@ interface StringAPIResource extends APIResource {
 
 
 function genNamedAPIResource(name: string, description: string, data: any): NamedAPIResource | undefined {
-    return data ? {name: name, description: description, id: versionNumberFromUrl(data.url), value: data.name } : undefined
+    return data ? {name: name, description: description, id: versionNumberFromUrl(data.url), value: camelToPresentation(data.name) } : undefined
 }
 
 function genStringAPIResource(name: string, description: string, value: string): StringAPIResource | undefined {
