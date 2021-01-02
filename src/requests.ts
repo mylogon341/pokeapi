@@ -64,7 +64,7 @@ async function getEvolutionDetails(id: string): Promise<any> {
             .then(res => new PokemonSpecies(res.data))
             .then(species => axios.get(species.evolution_chain_url))
             .then(res => new EvolutionDetail(res.data, Number(id)))
-            .then(chain => success(chain.detail))
+            .then(eDetail => success(eDetail.detail))
             .catch(err => {
                 console.log(err)
                 reject(err)

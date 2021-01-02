@@ -6,7 +6,7 @@ import { Ability } from "./ability"
 import { EvolutionDetails } from "./evolutionDetails"
 
 class Clearable {
-    clear() { }
+    clear() {console.log("empty implementation")}
 }
 
 class BasicPokemon {
@@ -109,10 +109,11 @@ class EvolutionChain {
 
 interface PokeAndDetail {
     bPokemon: BasicPokemon
-    detail: any
+    detail: EvolutionDetails[]
 }
 class EvolutionDetail {
-    detail: any
+    detail: EvolutionDetails[]
+
     constructor(body, searchId: number) {
         const evo = new Chain(body.chain)
         const first: PokeAndDetail = {bPokemon: evo.species, detail: evo.details}
