@@ -60,7 +60,7 @@ export class EvolutionDetails {
     turn_upside_down: BooleanAPIResource
 
     constructor(body) {
-        this.item = genNamedAPIResource("Name", "The item required to cause evolution this into Pokémon species.", body.item)
+        this.item = genNamedAPIResource("Item", "The item required to cause evolution this into Pokémon species.", body.item)
         this.trigger = genNamedAPIResource("Trigger", "The type of event that triggers evolution into this Pokémon species.", body.trigger)
         this.gender = genIntegerAPIType("Gender", "The id of the gender of the evolving Pokémon species must be in order to evolve into this Pokémon species.", body.gender)
         this.held_item = genNamedAPIResource("Held item", "The item the evolving Pokémon species must be holding during the evolution trigger event to evolve into this Pokémon species.", body.held_item)
