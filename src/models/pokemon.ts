@@ -3,6 +3,7 @@ import { Stats } from "./stats"
 import { capitalizeFirstLetter, versionNumberFromUrl } from "../Helpers"
 import { Type } from "./types"
 import { Ability } from "./ability"
+import { EvolutionDetails } from "./evolutionDetails"
 
 class Clearable {
     clear() { }
@@ -74,12 +75,12 @@ class PokemonSpecies {
 
 class Chain {
     to: Chain[]
-    details: any | null // let front end sort this out. no point remapping
+    details: EvolutionDetails[]
     species: BasicPokemon
     
     constructor(body) {
         this.to = body.evolves_to.map(t => new Chain(t))
-        this.details = body.evolution_details
+        this.details = body.evolution_details.map(d => new EvolutionDetails(d))
         this.species = new BasicPokemon(body.species)
     }
 }
