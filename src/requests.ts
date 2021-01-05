@@ -107,7 +107,7 @@ async function getItem(item: number | string) {
 ////
 async function listAll(): Promise<BasicPokemon[]> {
     return new Promise((success, reject) => {
-        axios.get(baseUrl + "pokemon?limit=1200")
+        axios.get(`${baseUrl}/pokemon?limit=1200`)
             .then(body => {
                 success(body.data.results
                     .map(obj => new BasicPokemon(obj))
