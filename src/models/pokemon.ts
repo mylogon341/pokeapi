@@ -6,18 +6,16 @@ import { Ability } from "./ability"
 import { EvolutionDetails } from "./evolutionDetails"
 
 class Clearable {
-    clear(): void {console.log("empty implementation")}
+    clear(): void { console.log("empty implementation") }
 }
 
 class BasicPokemon {
     name: string
-    url: string
-    index: number
+    id: number
     constructor(body: Record<string, string>) {
 
         this.name = capitalizeFirstLetter(body.name)
-        this.url = body.url
-        this.index = versionNumberFromUrl(body.url)
+        this.id = versionNumberFromUrl(body.url)
     }
 }
 
@@ -77,7 +75,7 @@ class Chain {
     to: Chain[]
     details: EvolutionDetails[]
     species: BasicPokemon
-    
+
     constructor(body) {
         this.to = body.evolves_to.map(t => new Chain(t))
         this.details = body.evolution_details.map(d => new EvolutionDetails(d))
@@ -116,13 +114,13 @@ class EvolutionDetail {
 
     constructor(body: any, searchId: number) {
         const evo = new Chain(body.chain)
-        const first: PokeAndDetail = {bPokemon: evo.species, detail: evo.details}
+        const first: PokeAndDetail = { bPokemon: evo.species, detail: evo.details }
         const deets = flattenChain<PokeAndDetail>(evo.to, (x => {
-            const pd: PokeAndDetail = {bPokemon: x.species, detail: x.details}
+            const pd: PokeAndDetail = { bPokemon: x.species, detail: x.details }
             return pd
         }))
         deets.push(first)
-        this.detail = deets.filter(x => x.bPokemon.index == searchId)[0].detail
+        this.detail = deets.filter(x => x.bPokemon.id == searchId)[0].detail
     }
 }
 
@@ -145,7 +143,7 @@ class Pokemon {
                 a.clear()
             }
         })
-        
+
     }
 }
 

@@ -45,17 +45,16 @@ app.get("/evolution-details/:number", (req, res) => {
     .catch(err => res.status(500).json(err))
 })
 
+app.get("/items", (_, res) => {
+  allItems()
+    .then(body => res.json(body))
+    .catch(err => res.status(500).json(err))
+})
+
 app.get("/item/:number", (req, res) => {
-  const num = req.params.number
-  if (num) {
-    getItem(num)
-      .then(body => res.json(body))
-      .catch(err => res.status(500).json(err))
-  } else {
-    allItems()
-      .then(body => res.json(body))
-      .catch(err => res.status(500).json(err))
-  }
+  getItem(req.params.number)
+    .then(body => res.json(body))
+    .catch(err => res.status(500).json(err))
 })
 
 // start the express server

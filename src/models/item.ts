@@ -5,9 +5,11 @@ import { BasicPokemon } from "./pokemon"
 export class BasicItem {
     name: string
     id: number
+    sprite_name: string
     constructor(i: Record<string, string>) {
         this.name = dashStringToSentence(i.name)
         this.id = versionNumberFromUrl(i.url)
+        this.sprite_name = i.name
     }
 }
 
