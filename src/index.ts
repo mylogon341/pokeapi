@@ -1,6 +1,7 @@
 import express from "express";
-import { listAll, pokemon, getEvolutionDetails } from "./requests"
-import { Image } from "./models/image"
+import { listAll, pokemon, getEvolutionDetails, allItems, getItem } from "./requests"
+import { NameURL } from "./models/common"
+
 const app = express();
 const port = 8080; // default port to listen
 
@@ -8,7 +9,8 @@ app.get("/image-urls", (_, res) => {
   res.json(
     {
       "main_image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$.png",
-      "sprite_image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$.png"
+      "sprite_image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$.png",
+      "item_sprite_image": "http://pokeapi.co/media/sprites/items/$.png"
     }
   )
 })
@@ -16,34 +18,50 @@ app.get("/image-urls", (_, res) => {
 app.get("/type-charts", (_, res) => {
   res.json(
     [
-      new Image("https://img.pokemondb.net/images/typechart-gen1.png", "Gen 1"),
-      new Image("https://img.pokemondb.net/images/typechart-gen2345.png", "Gen 2 - 5"),
-      new Image("https://img.pokemondb.net/images/typechart.png", "Gen 6+")
+      new NameURL("Gen 1", "https://img.pokemondb.net/images/typechart-gen1.png"),
+      new NameURL("Gen 2 - 5", "https://img.pokemondb.net/images/typechart-gen2345.png"),
+      new NameURL("Gen 6+", "https://img.pokemondb.net/images/typechart.png")
     ]
   )
 })
 
-app.get("/pokemon", (req, res) => {
-  listAll()
-  .then(pokemon => {
-    res.json(pokemon)
-  }).catch(err => res.json(err))
-})
-
 app.get("/pokemon/:number", (req, res) => {
-  pokemon(req.params.number)
-  .then(poke => res.json(poke))
-  .catch(err => res.status(500).json(err))
+
+  const num = req.params.number
+
+  if (num) {
+    pokemon(req.params.number)
+      .then(poke => res.json(poke))
+      .catch(err => res.status(500).json(err))
+  } else {
+    listAll()
+      .then(pokemon => {
+        res.json(pokemon)
+      }).catch(err => res.json(err))
+  }
 })
 
 app.get("/evolution-details/:number", (req, res) => {
   getEvolutionDetails(req.params.number)
-  .then(detail => res.json(detail))
-  .catch(err => res.status(500).json(err))
+    .then(detail => res.json(detail))
+    .catch(err => res.status(500).json(err))
+})
+
+app.get("/item/:number", (req, res) => {
+  const num = req.params.number
+  if (num) {
+    getItem(num)
+    .then(body => res.json(body))
+    .catch(err => res.status(500).json(err))
+  } else {
+    allItems()
+    .then(body => res.json(body))
+    .catch(err => res.status(500).json(err))
+  }
 })
 
 // start the express server
-app.listen( port, () => {
-    // tslint:disable-next-line:no-console
-    console.log( `server started at http://localhost:${ port }` );
-} );
+app.listen(port, () => {
+  // tslint:disable-next-line:no-console
+  console.log(`server started at http://localhost:${port}`);
+});

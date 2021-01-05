@@ -6,14 +6,14 @@ import { Ability } from "./ability"
 import { EvolutionDetails } from "./evolutionDetails"
 
 class Clearable {
-    clear() {console.log("empty implementation")}
+    clear(): void {console.log("empty implementation")}
 }
 
 class BasicPokemon {
     name: string
     url: string
     index: number
-    constructor(body) {
+    constructor(body: Record<string, string>) {
 
         this.name = capitalizeFirstLetter(body.name)
         this.url = body.url
@@ -33,7 +33,7 @@ class BasePokemon extends Clearable {
     types: string[]
     ability_info: AbilityInfo[]
 
-    constructor(body) {
+    constructor(body: Record<string, any>) {
         super()
         this.id = body.id
         this.moves = body.moves.map(m => new Move(m))
@@ -49,7 +49,7 @@ class BasePokemon extends Clearable {
         })
     }
 
-    clear() {
+    clear(): void {
         this.species_url = undefined
         this.ability_info = undefined
     }
@@ -61,7 +61,7 @@ class PokemonSpecies {
     evolution_chain_url: string
     evolves_from: BasicPokemon
 
-    constructor(body) {
+    constructor(body: Record<string, any>) {
         this.is_legendary = body.is_legendary
         this.is_mythical = body.is_mythical
         this.evolution_chain_url = body.evolution_chain.url
@@ -114,7 +114,7 @@ interface PokeAndDetail {
 class EvolutionDetail {
     detail: EvolutionDetails[]
 
-    constructor(body, searchId: number) {
+    constructor(body: any, searchId: number) {
         const evo = new Chain(body.chain)
         const first: PokeAndDetail = {bPokemon: evo.species, detail: evo.details}
         const deets = flattenChain<PokeAndDetail>(evo.to, (x => {

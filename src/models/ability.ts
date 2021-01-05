@@ -1,4 +1,4 @@
-import { capitalizeFirstLetter } from "../Helpers"
+import { capitalizeFirstLetter, lineBreaksToString } from "../Helpers"
 
 export class Ability {
     flavour_text: string
@@ -15,7 +15,7 @@ export class Ability {
         const flavours = data.flavor_text_entries.filter(f => f.language.name == "en")
         if (flavours.length > 0) {
             const flavourText: string = flavours[0].flavor_text
-            this.flavour_text = flavourText.replace("\n", " ")
+            this.flavour_text = lineBreaksToString(flavourText)
         }
 
         const entries = data.effect_entries.filter(i => i.language.name === "en")

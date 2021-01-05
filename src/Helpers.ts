@@ -8,5 +8,13 @@ export function versionNumberFromUrl(url: string): number {
 }
 
 export function camelToPresentation(value: string): string {
-    return capitalizeFirstLetter(value.replace("_", " "))
+    return capitalizeFirstLetter(value.replace(/_/g, " "))
+}
+
+export function dashStringToSentence(value: string): string {
+    return capitalizeFirstLetter(value.replace(/-/g, " "))
+}
+
+export function lineBreaksToString(value: string): string {
+    return value.replace(/\n/g, " ")
 }
