@@ -10,7 +10,7 @@ app.get("/image-urls", (_, res) => {
     {
       "main_image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$.png",
       "sprite_image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$.png",
-      "item_sprite_image": "http://pokeapi.co/media/sprites/items/$.png"
+      "item_sprite_image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/$.png"
     }
   )
 })
