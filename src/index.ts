@@ -25,20 +25,18 @@ app.get("/type-charts", (_, res) => {
   )
 })
 
+app.get("/pokemon", (_, res) => {
+  listAll()
+    .then(pokemon => {
+      res.json(pokemon)
+    }).catch(err => res.json(err))
+})
+
 app.get("/pokemon/:number", (req, res) => {
 
-  const num = req.params.number
-
-  if (num) {
-    pokemon(req.params.number)
-      .then(poke => res.json(poke))
-      .catch(err => res.status(500).json(err))
-  } else {
-    listAll()
-      .then(pokemon => {
-        res.json(pokemon)
-      }).catch(err => res.json(err))
-  }
+  pokemon(req.params.number)
+    .then(poke => res.json(poke))
+    .catch(err => res.status(500).json(err))
 })
 
 app.get("/evolution-details/:number", (req, res) => {
@@ -51,12 +49,12 @@ app.get("/item/:number", (req, res) => {
   const num = req.params.number
   if (num) {
     getItem(num)
-    .then(body => res.json(body))
-    .catch(err => res.status(500).json(err))
+      .then(body => res.json(body))
+      .catch(err => res.status(500).json(err))
   } else {
     allItems()
-    .then(body => res.json(body))
-    .catch(err => res.status(500).json(err))
+      .then(body => res.json(body))
+      .catch(err => res.status(500).json(err))
   }
 })
 
