@@ -8,11 +8,14 @@ declare interface String {
 }
 
 String.prototype.capitaliseFirstLetter = function () {
-    return this.charAt(0).toUpperCase() + this.slice(1);
+    return this.charAt(0)
+    .toUpperCase() + this.slice(1);
 }
 
 String.prototype.capitaliseEachWord = function () {
-    return this.split(" ").map(w => this.capitaliseFirstLetter(w)).join(" ")
+    return this.split(" ")
+    .map(w => w.capitaliseFirstLetter())
+    .join(" ")
 }
 
 String.prototype.versionNumberFromUrl = function() {

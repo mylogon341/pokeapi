@@ -4,6 +4,7 @@ import { Type } from "./types"
 import { Ability } from "./ability"
 import { EvolutionDetails } from "./evolutionDetails"
 import { Move } from "./moves"
+import { NameURL } from "./common"
 
 class Clearable {
     clear(): void { console.log("empty implementation") }
@@ -59,6 +60,7 @@ class PokemonSpecies {
     is_legendary: boolean
     evolution_chain_url: string
     evolves_from: BasicPokemon
+    growth_rate: NameURL
 
     constructor(body: Record<string, any>) {
         this.is_legendary = body.is_legendary
@@ -67,6 +69,7 @@ class PokemonSpecies {
         if (body.evolves_from_species) {
             this.evolves_from = new BasicPokemon(body.evolves_from_species)
         }
+        this.growth_rate = NameURL.fromObj(body.growth_rate)
     }
 }
 
