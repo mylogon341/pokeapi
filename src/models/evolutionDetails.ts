@@ -24,22 +24,39 @@ interface StringAPIResource extends APIResource {
 
 
 function genNamedAPIResource(name: string, description: string, data: any): NamedAPIResource | undefined {
-    return data ? {name: name, 
-        description: description, 
-        id: data.url.versionNumberFromUrl(), 
-        value: data.name.camelToPresentation() } : undefined
+    return data ? {
+        name: name.removeDashes().capitaliseEachWord(),
+        description: description,
+        id: data.url.versionNumberFromUrl(),
+        value: data.name.camelToPresentation()
+    } : undefined
 }
 
 function genStringAPIResource(name: string, description: string, value: string): StringAPIResource | undefined {
-    return value ? {name: name, description: description, value: value} : undefined
+    return value ?
+        {
+            name: name,
+            description: description,
+            value: value
+        } : undefined
 }
 
 function genIntegerAPIType(name: string, description: string, value: number): IntegerAPIResource | undefined {
-    return value ? {name: name, description: description, value: value } : undefined
+    return value ?
+        {
+            name: name,
+            description: description,
+            value: value
+        } : undefined
 }
 
 function genBooleanAPIType(name: string, description: string, value: boolean): BooleanAPIResource | undefined {
-    return value ? {name: name, description: description, value: value } : undefined
+    return value ?
+        {
+            name: name,
+            description: description,
+            value: value
+        } : undefined
 }
 
 export class EvolutionDetails {

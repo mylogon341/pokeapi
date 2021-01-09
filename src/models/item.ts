@@ -39,7 +39,7 @@ export class Item {
 
     constructor(body: Record<string, any>) {
         this.id = body.id
-        this.name = body.name.removeDashes()
+        this.name = body.name.removeDashes().capitaliseEachWord()
         this.cost = body.cost
         this.attributes = body.attributes.map(a => NameURL.fromObj(a))
         this.baby_trigger_for = body.baby_trigger_for ? body.baby_trigger_for.url : undefined
