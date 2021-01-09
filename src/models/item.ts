@@ -1,4 +1,4 @@
-import { dashStringToSentence, lineBreaksToString, versionNumberFromUrl } from "../Helpers"
+import "../Helpers"
 import { NameURL } from "./common"
 import { BasicPokemon } from "./pokemon"
 
@@ -7,8 +7,8 @@ export class BasicItem {
     id: number
     sprite_name: string
     constructor(i: Record<string, string>) {
-        this.name = dashStringToSentence(i.name)
-        this.id = versionNumberFromUrl(i.url)
+        this.name = i.name.removeDashes()
+        this.id = i.url.versionNumberFromUrl()
         this.sprite_name = i.name
     }
 }
@@ -39,7 +39,7 @@ export class Item {
 
     constructor(body: Record<string, any>) {
         this.id = body.id
-        this.name = dashStringToSentence(body.name)
+        this.name = body.name.removeDashes()
         this.cost = body.cost
         this.attributes = body.attributes.map(a => NameURL.fromObj(a))
         this.baby_trigger_for = body.baby_trigger_for ? body.baby_trigger_for.url : undefined
@@ -54,14 +54,14 @@ export class Item {
 
         if (engEffectEntry.length > 0) {
             const entry = engEffectEntry[0]
-            this.effect_description = { short: entry.short_effect, full: lineBreaksToString(entry.effect) }
+            this.effect_description = { short: entry.short_effect, full: entry.effect.removeLinebreaks() }
         }
 
         this.flavour_text_entries = body
             .flavor_text_entries
             .filter(e => e.language.name == "en")
             .map(e => {
-                return { group: dashStringToSentence(e.version_group.name), entry: lineBreaksToString(e.text) }
+                return { group: e.version_group.name.removeDashes(), entry: e.text.removeLinebreaks() }
             })
 
         this.held_by_pokemon = body

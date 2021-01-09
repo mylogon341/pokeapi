@@ -1,10 +1,10 @@
-import { capitalizeFirstLetter } from "../Helpers"
+import "../Helpers"
 
 export class Type {
     name: string
     url: string
     constructor(body) {
-        this.name = capitalizeFirstLetter(body.type.name)
+        this.name = body.type.name.capitaliseFirstLetter()
         this.url = body.type.url
     }
 }

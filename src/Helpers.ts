@@ -1,20 +1,33 @@
-export function capitalizeFirstLetter(string: string): string {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+declare interface String {
+    capitaliseFirstLetter(): string
+    capitaliseEachWord(): string
+    versionNumberFromUrl(): number
+    camelToPresentation(): string
+    removeDashes(): string
+    removeLinebreaks(): string
 }
 
-export function versionNumberFromUrl(url: string): number {
-    const splits = url.split("/")
+String.prototype.capitaliseFirstLetter = function () {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
+String.prototype.capitaliseEachWord = function () {
+    return this.split(" ").map(w => this.capitaliseFirstLetter(w)).join(" ")
+}
+
+String.prototype.versionNumberFromUrl = function() {
+    const splits = this.split("/")
     return Number(splits[splits.length - 2])
 }
 
-export function camelToPresentation(value: string): string {
-    return capitalizeFirstLetter(value.replace(/_/g, " "))
+String.prototype.camelToPresentation = function() {
+    return this.replace(/_/g, " ")
 }
 
-export function dashStringToSentence(value: string): string {
-    return capitalizeFirstLetter(value.replace(/-/g, " "))
+String.prototype.removeDashes = function() {
+    return this.replace(/-/g, " ")
 }
 
-export function lineBreaksToString(value: string): string {
-    return value.replace(/\n/g, " ")
+String.prototype.removeLinebreaks = function() {
+    return this.replace(/\n/g, " ")
 }

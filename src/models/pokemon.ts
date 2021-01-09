@@ -1,9 +1,9 @@
-import { Move } from "./moves"
 import { Stats } from "./stats"
-import { capitalizeFirstLetter, versionNumberFromUrl } from "../Helpers"
+import "../Helpers"
 import { Type } from "./types"
 import { Ability } from "./ability"
 import { EvolutionDetails } from "./evolutionDetails"
+import { Move } from "./moves"
 
 class Clearable {
     clear(): void { console.log("empty implementation") }
@@ -14,8 +14,8 @@ class BasicPokemon {
     id: number
     constructor(body: Record<string, string>) {
 
-        this.name = capitalizeFirstLetter(body.name)
-        this.id = versionNumberFromUrl(body.url)
+        this.name = body.name.capitaliseFirstLetter()
+        this.id = body.url.versionNumberFromUrl()
     }
 }
 
@@ -35,15 +35,16 @@ class BasePokemon extends Clearable {
         super()
         this.id = body.id
         this.moves = body.moves.map(m => new Move(m))
-        this.name = capitalizeFirstLetter(body.name)
+        this.name = body.name.capitaliseFirstLetter()
         this.species_url = body.species.url
         this.official_artwork = body.sprites.other["official-artwork"]["front_default"]
         this.stats = body.stats.map(s => new Stats(s))
         this.types = body.types.map(t => new Type(t)).map(t => t.name)
         this.ability_info = body.abilities.map(a => {
-            const num = versionNumberFromUrl(a.ability.url)
-            const isHidden = a.is_hidden
-            return { "id": num, "hidden": isHidden }
+            return {
+                "id": a.ability.url.versionNumberFromUrl(),
+                "hidden": a.is_hidden
+            }
         })
     }
 

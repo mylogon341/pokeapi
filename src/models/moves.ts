@@ -1,4 +1,4 @@
-import { capitalizeFirstLetter, versionNumberFromUrl } from "../Helpers"
+import "../Helpers"
 
 class GameVar {
     move_name: string
@@ -7,13 +7,19 @@ class GameVar {
     level_learned_at: number
     learned_via: string
 
-    constructor(moveName, data) {
-        this.version_name = capitalizeFirstLetter(data["version_group"].name)
-        const version_url = data["version_group"].url
-        this.version_number = versionNumberFromUrl(version_url)
+    constructor(moveName: string, data) {
+
+        this.version_name = data["version_group"]
+            .name
+            .removeDashes
+            .capitaliseEachWord
+
+        this.version_number = data["version_group"].url.versionNumberFromUrl()
+
         this.level_learned_at = Number(data["level_learned_at"])
         this.learned_via = data["move_learn_method"].name
-        this.move_name = moveName
+
+        this.move_name = moveName.removeDashes().capitaliseFirstLetter()
     }
 }
 
@@ -22,8 +28,11 @@ export class Move {
     game_variants: GameVar[]
 
     constructor(data) {
-        this.name = capitalizeFirstLetter(data.move.name)
+        this.name = data.move.name
+
         const groupDetails: { string: any }[] = data["version_group_details"]
         this.game_variants = groupDetails.map(g => new GameVar(this.name, g))
+
+        this.name = undefined
     }
 }
