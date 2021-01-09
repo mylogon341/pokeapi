@@ -11,8 +11,8 @@ class GameVar {
 
         this.version_name = data["version_group"]
             .name
-            .removeDashes
-            .capitaliseEachWord
+            .removeDashes()
+            .capitaliseEachWord()
 
         this.version_number = data["version_group"].url.versionNumberFromUrl()
 
