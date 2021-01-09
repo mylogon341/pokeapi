@@ -1,10 +1,11 @@
-import { capitalizeFirstLetter } from "../Helpers"
+import { capitalizeFirstLetter, dashStringToSentence } from "../Helpers"
 
 export class NameURL {
     name: string
     url: string
     constructor(name: string, url: string) {
         this.name = capitalizeFirstLetter(name)
+        this.name = dashStringToSentence(this.name)
         this.url = url
     }
 
