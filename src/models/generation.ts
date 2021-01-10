@@ -13,12 +13,14 @@ export class AllGenerations {
 }
 
 export class Generation {
+    id: number
     region_name: string
     gen_name: string
     pokemon: BasicPokemon[]
     version_groups: NameURL[]
 
     constructor(data) {
+        this.id = data.id
         this.region_name = data.main_region.name.capitaliseFirstLetter()
         this.gen_name = data.name
         this.pokemon = data.pokemon_species.map(p => new BasicPokemon(p))
