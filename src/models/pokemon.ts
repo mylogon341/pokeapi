@@ -70,6 +70,7 @@ class PokemonSpecies {
             this.evolves_from = new BasicPokemon(body.evolves_from_species)
         }
         this.growth_rate = NameURL.fromObj(body.growth_rate)
+        this.growth_rate.name = this.growth_rate.name.capitaliseEachWord()
     }
 }
 

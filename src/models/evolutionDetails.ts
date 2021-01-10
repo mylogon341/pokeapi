@@ -25,10 +25,10 @@ interface StringAPIResource extends APIResource {
 
 function genNamedAPIResource(name: string, description: string, data: any): NamedAPIResource | undefined {
     return data ? {
-        name: name.removeDashes().capitaliseEachWord(),
+        name: name,
         description: description,
         id: data.url.versionNumberFromUrl(),
-        value: data.name.camelToPresentation()
+        value: data.name.removeDashes().capitaliseEachWord()
     } : undefined
 }
 
