@@ -1,5 +1,6 @@
 import axios from "axios"
 import { Ability } from "./models/ability"
+import { AllGenerations, Generation } from "./models/generation"
 import { BasicItem, Item } from "./models/item"
 import { AbilityInfo, BasicPokemon, EvolutionChain, EvolutionDetail, Pokemon, PokemonSpecies, BasePokemon } from "./models/pokemon"
 
@@ -105,15 +106,33 @@ async function getItem(item: number | string) {
 }
 
 ////
-async function listAll(): Promise<BasicPokemon[]> {
+async function listAll(): Promise<Generation[]> {
     return new Promise((success, reject) => {
-        axios.get(`${baseUrl}/pokemon?limit=1200`)
-            .then(body => {
-                success(body.data.results
-                    .map(obj => new BasicPokemon(obj))
-                )
+
+        let allGenerationData: Generation[] = []
+
+        axios.get(`${baseUrl}/generation`)
+            .then(body => new AllGenerations(body))
+            .then(gens => {
+                gens.generations.forEach(element => {
+                    axios.get(element.url)
+                    .then(response => {
+                        allGenerationData.push(new Generation(response.data))
+
+                        if (allGenerationData.length == gens.generations.length) {
+                            success(allGenerationData)
+                        }
+                    })
+                    .catch(e => {
+                        console.log(e)
+                        reject(e)
+                    })
+                });
             })
-            .catch(err => reject(err))
+            .catch(e => {
+                console.log(e)
+                reject(e)
+            })
     })
 }
 
