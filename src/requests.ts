@@ -1,15 +1,16 @@
 import axios from "axios"
 import { Ability } from "./models/ability"
+import { EncounterInfo, GameEncounters, sortEncounterDetails } from "./models/encounterDetail"
 import { AllGenerations, Generation } from "./models/generation"
 import { BasicItem, Item } from "./models/item"
-import { AbilityInfo, BasicPokemon, EvolutionChain, EvolutionDetail, Pokemon, PokemonSpecies, BasePokemon } from "./models/pokemon"
+import { AbilityInfo, EvolutionChain, EvolutionDetail, Pokemon, PokemonSpecies, BasePokemon } from "./models/pokemon"
 
 const baseUrl = "https://pokeapi.co/api/v2"
 
 async function getAllAbilities(infos: AbilityInfo[]): Promise<Ability[]> {
     return new Promise((success, reject) => {
 
-        let returningValue: Ability[] = []
+        const returningValue: Ability[] = []
         infos.forEach(info => {
             axios.get(`${baseUrl}/ability/${info.id}`)
                 .then(response => new Ability(response.data, info.hidden))
@@ -20,7 +21,7 @@ async function getAllAbilities(infos: AbilityInfo[]): Promise<Ability[]> {
                     }
                 })
                 .catch(err => {
-                    console.log(err)
+                    console.error(err)
                     reject(err)
                 })
         })
@@ -52,7 +53,7 @@ async function pokemon(pokemon: string | number): Promise<Pokemon> {
             })
             .then(abilities => success(new Pokemon(basePokemon, pokeSpecies, chainData, abilities)))
             .catch(err => {
-                console.log(err)
+                console.error(err)
                 reject(err)
             })
     })
@@ -73,7 +74,7 @@ async function getEvolutionDetails(pokemon: string | number): Promise<any> {
             .then(res => new EvolutionDetail(res.data, pokeIndex))
             .then(eDetail => success(eDetail.detail))
             .catch(err => {
-                console.log(err)
+                console.error(err)
                 reject(err)
             })
     })
@@ -81,7 +82,7 @@ async function getEvolutionDetails(pokemon: string | number): Promise<any> {
 
 //// Items
 
-async function allItems() {
+async function allItems(): Promise<BasicItem[]> {
     return new Promise((success, reject) => {
         axios.get(`${baseUrl}/item?limit=2000`)
             .then(body => {
@@ -93,15 +94,28 @@ async function allItems() {
     })
 }
 
-async function getItem(item: number | string) {
+async function getItem(item: number | string): Promise<Item> {
     return new Promise((success, reject) => {
         axios.get(`${baseUrl}/item/${item}`)
             .then(body => new Item(body.data))
             .then(item => success(item))
             .catch(err => {
-                console.log(err)
+                console.error(err)
                 reject(err)
             })
+    })
+}
+
+async function getEncounterDetails(pokemon: number | string): Promise<GameEncounters[]> {
+    return new Promise((success, reject) => {
+        axios.get(`${baseUrl}/pokemon/${pokemon}/encounters`)
+        .then(body => body.data.map(d => new EncounterInfo(d)))
+        .then((info: EncounterInfo[]) => sortEncounterDetails(info))
+        .then(sorted => success(sorted))
+        .catch(err => {
+            console.error(err)
+            reject(err)
+        })
     })
 }
 
@@ -109,24 +123,24 @@ async function getItem(item: number | string) {
 async function listAll(): Promise<Generation[]> {
     return new Promise((success, reject) => {
 
-        let allGenerationData: Generation[] = []
+        const allGenerationData: Generation[] = []
 
         axios.get(`${baseUrl}/generation`)
             .then(body => new AllGenerations(body))
             .then(gens => {
                 gens.generations.forEach(element => {
                     axios.get(element.url)
-                    .then(response => {
-                        allGenerationData.push(new Generation(response.data))
+                        .then(response => {
+                            allGenerationData.push(new Generation(response.data))
 
-                        if (allGenerationData.length == gens.generations.length) {
-                            success(allGenerationData)
-                        }
-                    })
-                    .catch(e => {
-                        console.log(e)
-                        reject(e)
-                    })
+                            if (allGenerationData.length == gens.generations.length) {
+                                success(allGenerationData)
+                            }
+                        })
+                        .catch(e => {
+                            console.log(e)
+                            reject(e)
+                        })
                 });
             })
             .catch(e => {
@@ -136,4 +150,4 @@ async function listAll(): Promise<Generation[]> {
     })
 }
 
-export { listAll, pokemon, getEvolutionDetails, allItems, getItem }
+export { listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails }

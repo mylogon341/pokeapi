@@ -1,9 +1,9 @@
 import express from "express";
-import { listAll, pokemon, getEvolutionDetails, allItems, getItem } from "./requests"
+import { listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails } from "./requests"
 import { NameURL } from "./models/common"
 
 const app = express();
-const port = 8080; // default port to listen
+const port = 8081; // default port to listen
 
 app.get("/image-urls", (_, res) => {
   res.json(
@@ -43,6 +43,12 @@ app.get("/evolution-details/:number", (req, res) => {
   getEvolutionDetails(req.params.number)
     .then(detail => res.json(detail))
     .catch(err => res.status(500).json(err))
+})
+
+app.get("/encounters/:number", (req, res) => {
+  getEncounterDetails(req.params.number)
+  .then(information => res.json(information))
+  .catch(err => res.status(500).json(err))
 })
 
 app.get("/items", (_, res) => {
