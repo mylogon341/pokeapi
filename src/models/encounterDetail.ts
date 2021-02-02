@@ -38,7 +38,7 @@ export class EncounterInfo {
     }
 }
 
-class EncounterLocation{
+class EncounterLocation {
     version_encounter_detail: Encounter[]
     location: string
     constructor(details: Encounter[], location: string) {
@@ -48,9 +48,10 @@ class EncounterLocation{
 }
 
 export class GameEncounters {
+    id: number
     game: string
     encounters: EncounterLocation[]
-    constructor(name: string, encounter: EncounterLocation) {
+    constructor(id: number, name: string, encounter: EncounterLocation) {
         this.game = name
         this.encounters = [encounter]
     }
@@ -74,7 +75,11 @@ export function sortEncounterDetails(details: EncounterInfo[]): GameEncounters[]
                 existing[0].encounters.push(new EncounterLocation(vDeet.encounter_details, detail.location_area.name))
             } else {
                 games.push(
-                    new GameEncounters(name, new EncounterLocation(vDeet.encounter_details, detail.location_area.name))
+                    new GameEncounters(
+                        vDeet.version.url.versionNumberFromUrl(),
+                        name,
+                        new EncounterLocation(vDeet.encounter_details, detail.location_area.name)
+                    )
                 )
             }
 
