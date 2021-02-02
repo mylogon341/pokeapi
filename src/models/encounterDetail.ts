@@ -69,6 +69,7 @@ export function sortEncounterDetails(details: EncounterInfo[]): GameEncounters[]
                     .filter(item => item.game === vDeet.version.name)
 
             const name = vDeet.version.name
+            const id = vDeet.version.url.versionNumberFromUrl()
             vDeet.version = undefined
 
             if (existing.length === 1) {
@@ -76,7 +77,7 @@ export function sortEncounterDetails(details: EncounterInfo[]): GameEncounters[]
             } else {
                 games.push(
                     new GameEncounters(
-                        vDeet.version.url.versionNumberFromUrl(),
+                        id,
                         name,
                         new EncounterLocation(vDeet.encounter_details, detail.location_area.name)
                     )
