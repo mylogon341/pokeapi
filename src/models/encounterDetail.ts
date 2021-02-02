@@ -52,6 +52,7 @@ export class GameEncounters {
     game: string
     encounters: EncounterLocation[]
     constructor(id: number, name: string, encounter: EncounterLocation) {
+        this.id = id
         this.game = name
         this.encounters = [encounter]
     }
