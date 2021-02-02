@@ -3,7 +3,7 @@ import { listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterD
 import { NameURL } from "./models/common"
 
 const app = express();
-const port = 8081; // default port to listen
+const port = 8080; // default port to listen
 
 app.get("/image-urls", (_, res) => {
   res.json(
