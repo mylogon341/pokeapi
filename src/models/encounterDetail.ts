@@ -1,19 +1,23 @@
-
 import { NameURL } from "./common";
 
 export class Encounter {
     min_level: number
     max_level: number
     chance: number
-    method: NameURL
-    condition_values: NameURL[]
+    method: string
+    condition_values: string[]
 
     constructor(data: Record<string, any>) {
         this.min_level = Number(data.min_level)
         this.max_level = Number(data.max_level)
         this.chance = Number(data.chance)
-        this.method = NameURL.fromObj(data.method)
-        this.condition_values = data.condition_values.map(obj => NameURL.fromObj(obj))
+        this.method = NameURL.fromObj(data.method).name
+
+        this.condition_values = 
+        data
+        .condition_values
+        .map(obj => NameURL.fromObj(obj))
+        .map((obj: NameURL) => obj.name)
     }
 }
 
