@@ -3,6 +3,7 @@ import { Ability } from "./models/ability"
 import { EncounterInfo, GameEncounters, sortEncounterDetails } from "./models/encounterDetail"
 import { AllGenerations, Generation } from "./models/generation"
 import { BasicItem, Item } from "./models/item"
+import { MoveInfo } from "./models/moveInfo"
 import { AbilityInfo, EvolutionChain, EvolutionDetail, Pokemon, PokemonSpecies, BasePokemon } from "./models/pokemon"
 
 const baseUrl = "https://pokeapi.co/api/v2"
@@ -24,6 +25,18 @@ async function getAllAbilities(infos: AbilityInfo[]): Promise<Ability[]> {
                     console.error(err)
                     reject(err)
                 })
+        })
+    })
+}
+
+async function getMoveInfo(id: number | string): Promise<MoveInfo> {
+    return new Promise((success, reject) => {
+        axios.get(`${baseUrl}/move/${id}`)
+        .then(body => new MoveInfo(body.data))
+        .then(info => success(info))
+        .catch(err => {
+            console.error(err)
+            reject(err)
         })
     })
 }
@@ -150,4 +163,4 @@ async function listAll(): Promise<Generation[]> {
     })
 }
 
-export { listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails }
+export { listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails, getMoveInfo }
