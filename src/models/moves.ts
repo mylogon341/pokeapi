@@ -1,14 +1,16 @@
 import "../Helpers"
 
 class GameVar {
+    id: number
     move_name: string
     version_name: string
     version_number: number
     level_learned_at: number
     learned_via: string
 
-    constructor(moveName: string, data) {
+    constructor(id: number, moveName: string, data) {
 
+        this.id = id
         this.version_name = data["version_group"]
             .name
             .removeDashes()
@@ -24,15 +26,14 @@ class GameVar {
 }
 
 export class Move {
-    name: string
+
     game_variants: GameVar[]
 
     constructor(data) {
-        this.name = data.move.name
+        const id = data.move.url.versionNumberFromUrl()
+        const name = data.move.name
 
         const groupDetails: { string: any }[] = data["version_group_details"]
-        this.game_variants = groupDetails.map(g => new GameVar(this.name, g))
-
-        this.name = undefined
+        this.game_variants = groupDetails.map(g => new GameVar(id, name, g))
     }
 }
