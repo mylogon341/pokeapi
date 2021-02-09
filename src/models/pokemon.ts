@@ -61,16 +61,26 @@ class PokemonSpecies {
     evolution_chain_url: string
     evolves_from: BasicPokemon
     growth_rate: NameURL
+    dex_entry: string
 
     constructor(body: Record<string, any>) {
         this.is_legendary = body.is_legendary
         this.is_mythical = body.is_mythical
         this.evolution_chain_url = body.evolution_chain.url
+        
         if (body.evolves_from_species) {
             this.evolves_from = new BasicPokemon(body.evolves_from_species)
         }
+        
         this.growth_rate = NameURL.fromObj(body.growth_rate)
         this.growth_rate.name = this.growth_rate.name.capitaliseEachWord()
+
+        const descriptions: Record<string, any>[] = body.flavor_text_entries
+        descriptions.sort((a, b) => {
+            return a.version.url.versionNumberFromUrl() - b.version.url.versionNumberFromUrl()
+        })
+
+        this.dex_entry = descriptions[0].flavor_text.removeLinebreaks()
     }
 }
 

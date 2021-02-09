@@ -32,5 +32,7 @@ String.prototype.removeDashes = function() {
 }
 
 String.prototype.removeLinebreaks = function() {
-    return this.replace(/\n/g, " ")
+    return this
+    .replace(/\n/g, " ")
+    .replace(/\f/g, " ")
 }
