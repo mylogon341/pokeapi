@@ -76,7 +76,9 @@ class PokemonSpecies {
         this.growth_rate.name = this.growth_rate.name.capitaliseEachWord()
 
         const descriptions: Record<string, any>[] = body.flavor_text_entries
-        descriptions.sort((a, b) => {
+        descriptions
+        .filter(i => i.language.name === "en")
+        .sort((a, b) => {
             return a.version.url.versionNumberFromUrl() - b.version.url.versionNumberFromUrl()
         })
 
