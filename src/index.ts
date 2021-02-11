@@ -72,8 +72,8 @@ app.get("/item/:number", (req, res) => {
     .catch(err => res.status(500).json(err))
 })
 
-app.post("/image/", (req, res) => {
-  getImage(req.body.url)
+app.get("/image", (req, res) => {
+  getImage(req.params.url)
   .then(path => res.json(path))
   .catch(err => {
     console.error(err)
