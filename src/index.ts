@@ -73,8 +73,12 @@ app.get("/item/:number", (req, res) => {
 })
 
 app.post("/image/", (req, res) => {
-  getImage(req.body.address)
+  getImage(req.body.url)
   .then(path => res.json(path))
+  .catch(err => {
+    console.error(err)
+    res.status(500).json(err)
+  })
 })
 
 // start the express server
