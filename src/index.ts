@@ -1,9 +1,13 @@
 import express from "express";
+import bodyParser from 'body-parser'
 import { listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails, getMoveInfo } from "./requests"
 import { NameURL } from "./models/common"
+import { getImage } from "./image_handler";
 
 const app = express();
 const port = 8081; // default port to listen
+
+app.use(bodyParser)
 
 app.get("/image-urls", (_, res) => {
   res.json(
@@ -67,6 +71,11 @@ app.get("/item/:number", (req, res) => {
   getItem(req.params.number)
     .then(body => res.json(body))
     .catch(err => res.status(500).json(err))
+})
+
+app.post("/image/", (req, res) => {
+  getImage(req.body.address)
+  .then(path => res.json(path))
 })
 
 // start the express server
