@@ -1,5 +1,4 @@
 import express from "express";
-import bodyParser from 'body-parser'
 import { listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails, getMoveInfo } from "./requests"
 import { NameURL } from "./models/common"
 import { getImage } from "./image_handler";
@@ -7,7 +6,7 @@ import { getImage } from "./image_handler";
 const app = express();
 const port = 8081; // default port to listen
 
-app.use(bodyParser)
+app.use(express.json())
 
 app.get("/image-urls", (_, res) => {
   res.json(
