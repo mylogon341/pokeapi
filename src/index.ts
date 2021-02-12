@@ -1,22 +1,12 @@
 import express from "express";
 import { listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails, getMoveInfo } from "./requests"
 import { NameURL } from "./models/common"
-import { getImage } from "./image_handler";
+import { getImage, ImageSource } from "./image_handler";
 
 const app = express();
 const port = 8081; // default port to listen
 
 app.use(express.json())
-
-app.get("/image-urls", (_, res) => {
-  res.json(
-    {
-      "main_image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/$.png",
-      "sprite_image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$.png",
-      "item_sprite_image": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/$.png"
-    }
-  )
-})
 
 app.get("/type-charts", (_, res) => {
   res.json(
@@ -44,8 +34,8 @@ app.get("/pokemon/:number", (req, res) => {
 
 app.get("/move-info/:id", (req, res) => {
   getMoveInfo(req.params.id)
-  .then(info => res.json(info))
-  .catch(err => res.status(500).json(err))
+    .then(info => res.json(info))
+    .catch(err => res.status(500).json(err))
 })
 
 app.get("/evolution-details/:number", (req, res) => {
@@ -56,8 +46,8 @@ app.get("/evolution-details/:number", (req, res) => {
 
 app.get("/encounters/:number", (req, res) => {
   getEncounterDetails(req.params.number)
-  .then(information => res.json(information))
-  .catch(err => res.status(500).json(err))
+    .then(information => res.json(information))
+    .catch(err => res.status(500).json(err))
 })
 
 app.get("/items", (_, res) => {
@@ -72,13 +62,28 @@ app.get("/item/:number", (req, res) => {
     .catch(err => res.status(500).json(err))
 })
 
-app.get("/image", (req, res) => {
-  getImage(req.params.url)
-  .then(path => res.json(path))
-  .catch(err => {
-    console.error(err)
-    res.status(500).json(err)
-  })
+app.get("/image/:type/:index", (req, res) => {
+
+  let type: ImageSource
+
+  switch (req.params.type) {
+    case "poke_sprite":
+      type = ImageSource.poke_sprite
+      break
+    case "item_sprite":
+      type = ImageSource.item_sprite
+      break
+    case "poke_image":
+      type = ImageSource.poke_image
+      break
+  }
+
+  getImage(type, req.params.index)
+    .then(path => res.sendFile(path))
+    .catch(err => {
+      console.error(err)
+      res.status(500).json(err)
+    })
 })
 
 // start the express server
