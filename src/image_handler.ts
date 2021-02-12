@@ -9,9 +9,9 @@ export enum ImageSource {
     item_sprite = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items"
 }
 
-// const local_dir = "/mnt/storage/images"
+const local_dir = "/mnt/storage/images"
 
-const local_dir = "/Users/lukesadler/pokemon/images"
+// const local_dir = "/Users/lukesadler/pokemon/images"
 
 export async function getImage(type: ImageSource, index: string): Promise<string> {
 
