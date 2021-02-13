@@ -8,6 +8,10 @@ const port = 8081; // default port to listen
 
 app.use(express.json())
 
+app.get("/reachability", (_, res) => {
+  res.json()
+})
+
 app.get("/type-charts", (_, res) => {
   res.json(
     [

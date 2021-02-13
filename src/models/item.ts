@@ -6,6 +6,7 @@ export class BasicItem {
     name: string
     id: number
     sprite_name: string
+    
     constructor(i: Record<string, string>) {
         this.name = i.name.removeDashes().capitaliseEachWord()
         this.id = i.url.versionNumberFromUrl()
