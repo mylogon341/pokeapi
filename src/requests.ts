@@ -162,8 +162,11 @@ async function listAll(): Promise<Generation[]> {
                 returningGens = gens
                 return getAlolanPokemon()
             })
-            .then(a => returningGens.push(a))
-            .then(_ => success(returningGens))
+            .then(pokes => {
+                const gen7 = returningGens.find(g => g.id == 7)
+                gen7.pokemon = gen7.pokemon.concat(pokes)
+                success(returningGens)
+            })
             .catch(err => reject(err))
     })
 }
@@ -185,20 +188,12 @@ async function getAllGenerationData(): Promise<Generation[]> {
     })
 }
 
-async function getAlolanPokemon(): Promise<Generation> {
+async function getAlolanPokemon(): Promise<BasicPokemon[]> {
     return new Promise((success, reject) => {
         api.get('/pokemon?limit=1000&offset=1000')
             .then(response => response.data.results)
-            .then(pokemonData => {
-                return Generation.create_from(
-                    100,
-                    "Alola",
-                    "Alola",
-                    pokemonData,
-                    ["Sun and Moon", "Ultra Sun and Ultra Moon"]
-                    )
-            })
-            .then(gen => success(gen))
+            .then(pokemonData => pokemonData.map(p => new BasicPokemon(p)))
+            .then(pokes => success(pokes))
     })
 }
 
