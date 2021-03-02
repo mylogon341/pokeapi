@@ -190,7 +190,8 @@ async function getAlolanPokemon(): Promise<Generation> {
         api.get('/pokemon?limit=1000&offset=1000')
             .then(response => response.data.results)
             .then(pokemonData => {
-                return Generation.create_from(10,
+                return Generation.create_from(
+                    7,
                     "Alola",
                     "Alola",
                     pokemonData,

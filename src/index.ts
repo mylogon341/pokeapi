@@ -38,6 +38,7 @@ function spamming(): Promise<Promise<void>[]> {
               .then(() => getMoveInfo(p.id))
               .then(() => getEvolutionDetails(p.id))
               .then(() => getEncounterDetails(p.id))
+              .then(() => getImage(ImageSource.poke_image, `${p.id}`))
               .then(() => console.log(`success ${p.id}`))
               .catch(e => {
                 console.error(`${e}\n${p.id}`)
