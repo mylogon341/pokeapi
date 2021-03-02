@@ -38,7 +38,7 @@ export class Generation {
             {
                 "id": id,
                 "main_region": { "name": region_name},
-                "gen_name": gen_name,
+                "name": gen_name,
                 "pokemon_species": pokemon,
                 "version_groups": version_names.map(n => {
                     return {
