@@ -160,7 +160,8 @@ async function listAll(): Promise<Generation[]> {
         getAllGenerationData()
             .then(gens => {
                 returningGens = gens
-                return getAlolanPokemon()
+                const offset = get_highest_index_number(gens)
+                return getAlolanPokemon(offset)
             })
             .then(pokes => {
                 const gen7 = returningGens.find(g => g.id == 7)
@@ -188,12 +189,20 @@ async function getAllGenerationData(): Promise<Generation[]> {
     })
 }
 
-async function getAlolanPokemon(): Promise<BasicPokemon[]> {
+function get_highest_index_number(gens: Generation[]): number {
+    const pokes = gens
+        .map(g => g.pokemon)
+        .reduce((prev, pokes) => prev.concat(pokes))
+    return Math.max(0, ...pokes.map(p => p.id))
+}
+
+async function getAlolanPokemon(offset: number): Promise<BasicPokemon[]> {
     return new Promise((success, reject) => {
-        api.get('/pokemon?limit=1000&offset=1000')
+        api.get(`/pokemon?limit=1000&offset=${offset}`)
             .then(response => response.data.results)
             .then(pokemonData => pokemonData.map(p => new BasicPokemon(p)))
             .then(pokes => success(pokes))
+            .catch(e => reject(e))
     })
 }
 
