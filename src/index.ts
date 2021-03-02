@@ -27,6 +27,35 @@ app.get("/pokemon", (_, res) => {
     }).catch(err => res.json(err))
 })
 
+function spamming(): Promise<Promise<void>[]> {
+  return new Promise((res, _) => {
+
+    listAll()
+      .then(gens => {
+        gens.forEach(g => {
+          res(g.pokemon.map(p => {
+            return pokemon(p.id)
+              .then(() => getMoveInfo(p.id))
+              .then(() => getEvolutionDetails(p.id))
+              .then(() => getEncounterDetails(p.id))
+              .then(() => console.log(`success ${p.id}`))
+              .catch(e => {
+                console.error(`${e}\n${p.id}`)
+              })
+          })
+          )
+        })
+      })
+  })
+}
+
+app.get("/spam", (_req, res) => {
+  res.send("triggered")
+  spamming()
+    .then(promises => Promise.all(promises))
+    .then(() => console.log("complete!"))
+})
+
 app.get("/pokemon/:number", (req, res) => {
 
   pokemon(req.params.number)

@@ -1,6 +1,7 @@
 // import axios from "axios"
 
 import { setup, RedisStore } from 'axios-cache-adapter'
+import { response } from 'express'
 import redis from 'redis'
 
 
@@ -9,7 +10,7 @@ import { EncounterInfo, GameEncounters, sortEncounterDetails } from "./models/en
 import { AllGenerations, Generation } from "./models/generation"
 import { BasicItem, Item } from "./models/item"
 import { MoveInfo } from "./models/moveInfo"
-import { AbilityInfo, EvolutionChain, EvolutionDetail, Pokemon, PokemonSpecies, BasePokemon } from "./models/pokemon"
+import { AbilityInfo, EvolutionChain, EvolutionDetail, Pokemon, PokemonSpecies, BasePokemon, BasicPokemon } from "./models/pokemon"
 
 const client = redis.createClient({
     url: 'redis://192.168.1.97:6379'
@@ -17,13 +18,13 @@ const client = redis.createClient({
 
 const store = new RedisStore(client)
 const api = setup({
-  // `axios` options
-  baseURL: 'https://pokeapi.co/api/v2',
-  // `axios-cache-adapter` options
-  cache: {
-    maxAge: 4 * 7 * 24 * 60 * 60 * 1000, // 4 weeks
-    store // Pass `RedisStore` store to `axios-cache-adapter`
-  }
+    // `axios` options
+    baseURL: 'https://pokeapi.co/api/v2',
+    // `axios-cache-adapter` options
+    cache: {
+        maxAge: 4 * 7 * 24 * 60 * 60 * 1000, // 4 weeks
+        store // Pass `RedisStore` store to `axios-cache-adapter`
+    }
 })
 
 async function getAllAbilities(infos: AbilityInfo[]): Promise<Ability[]> {
@@ -32,10 +33,7 @@ async function getAllAbilities(infos: AbilityInfo[]): Promise<Ability[]> {
         const returningValue: Ability[] = []
         infos.forEach(info => {
             api.get(`/ability/${info.id}`)
-                .then(response => {
-                    console.log(`is response from cache?: ${response.request.fromCache}`)
-                    return new Ability(response.data, info.hidden)
-                })
+                .then(response => new Ability(response.data, info.hidden))
                 .then(a => returningValue.push(a))
                 .then(() => {
                     if (returningValue.length == infos.length) {
@@ -157,30 +155,49 @@ async function getEncounterDetails(pokemon: number | string): Promise<GameEncoun
 async function listAll(): Promise<Generation[]> {
     return new Promise((success, reject) => {
 
-        const allGenerationData: Generation[] = []
+        let returningGens: Generation[]
 
+        getAllGenerationData()
+            .then(gens => {
+                returningGens = gens
+                return getAlolanPokemon()
+            })
+            .then(a => returningGens.push(a))
+            .then(_ => success(returningGens))
+            .catch(err => reject(err))
+    })
+}
+
+async function getAllGenerationData(): Promise<Generation[]> {
+    return new Promise((success, reject) => {
         api.get(`/generation`)
             .then(body => new AllGenerations(body))
-            .then(gens => {
-                gens.generations.forEach(element => {
-                    api.get(element.url)
-                        .then(response => {
-                            allGenerationData.push(new Generation(response.data))
-
-                            if (allGenerationData.length == gens.generations.length) {
-                                success(allGenerationData)
-                            }
-                        })
-                        .catch(e => {
-                            console.log(e)
-                            reject(e)
-                        })
-                });
-            })
+            .then(gens => gens.generations)
+            .then(gens => gens.map(g => api.get(g.url)))
+            .then(gets => Promise.all(gets))
+            .then(responses => responses.map(r => r.data))
+            .then(datas => datas.map(d => new Generation(d)))
+            .then(gens => success(gens))
             .catch(e => {
-                console.log(e)
+                console.error(e)
                 reject(e)
             })
+    })
+}
+
+async function getAlolanPokemon(): Promise<Generation> {
+    return new Promise((success, reject) => {
+        api.get('/pokemon?limit=1000&offset=1000')
+            .then(response => response.data.results)
+            .then(pokemonData => {
+                return Generation.create_from(10,
+                    "Alola",
+                    "Alola",
+                    pokemonData,
+                    ["Sun and Moon", "Ultra Sun and Ultra Moon"]
+                    )
+            })
+            .then(gen => success(gen))
     })
 }
 

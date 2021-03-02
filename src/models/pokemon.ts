@@ -15,7 +15,7 @@ class BasicPokemon {
     id: number
     constructor(body: Record<string, string>) {
 
-        this.name = body.name.capitaliseFirstLetter()
+        this.name = body.name.removeDashes().capitaliseEachWord()
         this.id = body.url.versionNumberFromUrl()
     }
 }
@@ -36,7 +36,7 @@ class BasePokemon extends Clearable {
         super()
         this.id = body.id
         this.moves = body.moves.map(m => new Move(m))
-        this.name = body.name.capitaliseFirstLetter()
+        this.name = body.name.removeDashes().capitaliseEachWord()
         this.species_url = body.species.url
         this.official_artwork = body.sprites.other["official-artwork"]["front_default"]
         this.stats = body.stats.map(s => new Stats(s))
