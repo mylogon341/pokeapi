@@ -191,7 +191,7 @@ async function getAlolanPokemon(): Promise<Generation> {
             .then(response => response.data.results)
             .then(pokemonData => {
                 return Generation.create_from(
-                    0,
+                    100,
                     "Alola",
                     "Alola",
                     pokemonData,
