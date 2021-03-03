@@ -84,7 +84,7 @@ export class Move {
 
     private possiblyAdd(to: Record<string, string | number>[], key: string, val: string | number) {
         if (val != undefined && val != null && val != 0 && val != "None") {
-            to.push({ "order": to.length, "name": key, "value": val })
+            to.push({ "order": to.length, "name": key, "value": `${val}` })
         }
     }
 
