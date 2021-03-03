@@ -1,5 +1,5 @@
 import express from "express";
-import { listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails, getMoveInfo } from "./requests"
+import { listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails, getMove } from "./requests"
 import { NameURL } from "./models/common"
 import { getImage, ImageSource } from "./image_handler";
 
@@ -27,7 +27,7 @@ app.get("/pokemon", (_, res) => {
     }).catch(err => res.json(err))
 })
 
-function spamming(): Promise<Promise<void>[]> {
+function spammingPokemon(): Promise<Promise<void>[]> {
   return new Promise((res, _) => {
 
     listAll()
@@ -35,7 +35,6 @@ function spamming(): Promise<Promise<void>[]> {
         gens.forEach(g => {
           res(g.pokemon.map(p => {
             return pokemon(p.id)
-              .then(() => getMoveInfo(p.id))
               .then(() => getEvolutionDetails(p.id))
               .then(() => getEncounterDetails(p.id))
               .then(() => getImage(ImageSource.poke_image, `${p.id}`))
@@ -50,10 +49,20 @@ function spamming(): Promise<Promise<void>[]> {
   })
 }
 
+function spammingMoves(): Promise<void>[] {
+  return [...Array(850)].map(n => {
+    return getMove(n)
+      .then(() => console.log(`got move ${n}`))
+      .catch(err => console.error(err))
+  })
+}
+
 app.get("/spam", (_req, res) => {
   res.send("triggered")
-  spamming()
+  spammingPokemon()
     .then(promises => Promise.all(promises))
+    .then(() => spammingMoves())
+    .then(moves => Promise.all(moves))
     .then(() => console.log("complete!"))
 })
 
@@ -61,12 +70,6 @@ app.get("/pokemon/:number", (req, res) => {
 
   pokemon(req.params.number)
     .then(poke => res.json(poke))
-    .catch(err => res.status(500).json(err))
-})
-
-app.get("/move-info/:id", (req, res) => {
-  getMoveInfo(req.params.id)
-    .then(info => res.json(info))
     .catch(err => res.status(500).json(err))
 })
 
@@ -92,6 +95,12 @@ app.get("/item/:number", (req, res) => {
   getItem(req.params.number)
     .then(body => res.json(body))
     .catch(err => res.status(500).json(err))
+})
+
+app.get("/move/:id", (req, res) => {
+  getMove(req.params.id)
+    .then(flatData => res.json(flatData))
+    .catch(err => res.status(500).send(err))
 })
 
 app.get("/image/:type/:index", (req, res) => {

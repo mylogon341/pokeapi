@@ -10,6 +10,7 @@ import { EncounterInfo, GameEncounters, sortEncounterDetails } from "./models/en
 import { AllGenerations, Generation } from "./models/generation"
 import { BasicItem, Item } from "./models/item"
 import { MoveInfo } from "./models/moveInfo"
+import { Move } from './models/move'
 import { AbilityInfo, EvolutionChain, EvolutionDetail, Pokemon, PokemonSpecies, BasePokemon, BasicPokemon } from "./models/pokemon"
 
 const client = redis.createClient({
@@ -45,18 +46,6 @@ async function getAllAbilities(infos: AbilityInfo[]): Promise<Ability[]> {
                     reject(err)
                 })
         })
-    })
-}
-
-async function getMoveInfo(id: number | string): Promise<MoveInfo> {
-    return new Promise((success, reject) => {
-        api.get(`/move/${id}`)
-            .then(body => new MoveInfo(body.data))
-            .then(info => success(info))
-            .catch(err => {
-                console.error(err)
-                reject(err)
-            })
     })
 }
 
@@ -189,6 +178,19 @@ async function getAllGenerationData(): Promise<Generation[]> {
     })
 }
 
+async function getMove(move: string): Promise<Record<string, string | number>[]> {
+    return new Promise((success, reject) => {
+        api.get(`/move/${move}`)
+            .then(response => response.data)
+            .then(data => new Move(data))
+            .then(move => success(move.flattenedData()))
+            .catch(err => {
+                console.error(err)
+                reject(err)
+            })
+    })
+}
+
 function get_highest_index_number(gens: Generation[]): number {
     const pokes = gens
         .map(g => g.pokemon)
@@ -206,4 +208,4 @@ async function getAlolanPokemon(offset: number): Promise<BasicPokemon[]> {
     })
 }
 
-export { listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails, getMoveInfo }
+export { listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails, getMove }

@@ -3,7 +3,7 @@ import "../Helpers"
 import { Type } from "./types"
 import { Ability } from "./ability"
 import { EvolutionDetails } from "./evolutionDetails"
-import { Move } from "./moves"
+import { BasicMove } from "./move"
 import { NameURL } from "./common"
 
 class Clearable {
@@ -25,7 +25,7 @@ type AbilityInfo = { id: number, hidden: boolean }
 class BasePokemon extends Clearable {
     id: number
     name: string
-    moves: Move[]
+    moves: BasicMove[]
     species_url: string | null
     official_artwork: string
     stats: Stats[]
@@ -35,7 +35,7 @@ class BasePokemon extends Clearable {
     constructor(body: Record<string, any>) {
         super()
         this.id = body.id
-        this.moves = body.moves.map(m => new Move(m))
+        this.moves = body.moves.map(m => new BasicMove(m))
         this.name = body.name.removeDashes().capitaliseEachWord()
         this.species_url = body.species.url
         this.official_artwork = body.sprites.other["official-artwork"]["front_default"]
