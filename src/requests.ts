@@ -1,15 +1,14 @@
 // import axios from "axios"
 
 import { setup, RedisStore } from 'axios-cache-adapter'
-import { response } from 'express'
 import redis from 'redis'
 
 
 import { Ability } from "./models/ability"
 import { EncounterInfo, GameEncounters, sortEncounterDetails } from "./models/encounterDetail"
+import { EvolutionDetails } from './models/evolutionDetails'
 import { AllGenerations, Generation } from "./models/generation"
 import { BasicItem, Item } from "./models/item"
-import { MoveInfo } from "./models/moveInfo"
 import { Move } from './models/move'
 import { AbilityInfo, EvolutionChain, EvolutionDetail, Pokemon, PokemonSpecies, BasePokemon, BasicPokemon } from "./models/pokemon"
 
@@ -80,7 +79,7 @@ async function pokemon(pokemon: string | number): Promise<Pokemon> {
     })
 }
 
-async function getEvolutionDetails(pokemon: string | number): Promise<any> {
+async function getEvolutionDetails(pokemon: string | number): Promise<EvolutionDetails[]> {
     let pokeIndex: number
     return new Promise((success, reject) => {
         api.get(`/pokemon/${pokemon}`)
@@ -93,7 +92,7 @@ async function getEvolutionDetails(pokemon: string | number): Promise<any> {
             .then(res => new PokemonSpecies(res.data))
             .then(species => api.get(species.evolution_chain_url))
             .then(res => new EvolutionDetail(res.data, pokeIndex))
-            .then(eDetail => success(eDetail.detail))
+            .then(eDetail => success(eDetail.detail ?? []))
             .catch(err => {
                 console.error(err)
                 reject(err)

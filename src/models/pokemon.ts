@@ -127,7 +127,7 @@ interface PokeAndDetail {
     detail: EvolutionDetails[]
 }
 class EvolutionDetail {
-    detail: EvolutionDetails[]
+    detail: EvolutionDetails[] | undefined
 
     constructor(body: any, searchId: number) {
         const evo = new Chain(body.chain)
@@ -137,7 +137,11 @@ class EvolutionDetail {
             return pd
         }))
         deets.push(first)
-        this.detail = deets.filter(x => x.bPokemon.id == searchId)[0].detail
+
+        const deet = deets.find(x => x.bPokemon.id == searchId)
+        if (deet != undefined) {
+            this.detail = deet.detail
+        }
     }
 }
 
