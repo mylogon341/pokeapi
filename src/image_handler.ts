@@ -4,7 +4,7 @@ import md5 from 'md5'
 import axios from 'axios'
 
 export enum ImageSource {
-    poke_image = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/",
+    poke_image = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork",
     poke_sprite = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon",
     item_sprite = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items"
 }
