@@ -5,6 +5,7 @@ import { Ability } from "./ability"
 import { EvolutionDetails } from "./evolutionDetails"
 import { BasicMove } from "./move"
 import { NameURL } from "./common"
+import { Sprites } from "./sprites"
 
 class Clearable {
     clear(): void { console.log("empty implementation") }
@@ -27,8 +28,7 @@ class BasePokemon extends Clearable {
     name: string
     moves: BasicMove[]
     species_url: string | null
-    official_artwork: string
-    sprite: string
+    sprite: Sprites
     stats: Stats[]
     types: string[]
     ability_info: AbilityInfo[]
@@ -39,8 +39,7 @@ class BasePokemon extends Clearable {
         this.moves = body.moves.map(m => new BasicMove(m))
         this.name = body.name.removeDashes().capitaliseEachWord()
         this.species_url = body.species.url
-        this.official_artwork = body.sprites.other["official-artwork"]["front_default"]
-        this.sprite = body.sprites["front_default"]
+        this.sprite = new Sprites(body)
         this.stats = body.stats.map(s => new Stats(s))
         this.types = body.types.map(t => new Type(t)).map(t => t.name)
         this.ability_info = body.abilities.map(a => {

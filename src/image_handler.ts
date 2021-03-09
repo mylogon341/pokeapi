@@ -10,18 +10,18 @@ export enum ImageSource {
 export async function getImage(type: ImageSource, index: string): Promise<string> {
 
     const poke = await pokemon(index)
-    let path = "" 
+    // let path = "" 
 
     switch (type) {
         case ImageSource.poke_image:
-            path = poke.base.official_artwork.imageUrlToPath()
+            // path = poke.base.official_artwork.imageUrlToPath()
             break;
         case ImageSource.poke_sprite:
-            path = poke.base.sprite.imageUrlToPath()
+            // path = poke.base.sprite.imageUrlToPath()
             break;
         case ImageSource.item_sprite:
             break;
     }
 
-    return resolve("../node_modules/pokemon-sprites" + path)
+   return ""// return resolve("../node_modules/pokemon-sprites" + path)
 }

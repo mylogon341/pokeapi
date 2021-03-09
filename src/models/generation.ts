@@ -22,7 +22,7 @@ export class Generation {
     constructor(data) {
         this.id = data.id
         this.region_name = data.main_region.name.capitaliseFirstLetter()
-        this.gen_name = data.name
+        this.gen_name = data.name.removeDashes().toUpperCase()
         this.pokemon = data.pokemon_species.map(p => new BasicPokemon(p))
         this.version_groups = data.version_groups.map(v => NameURL.fromObj(v))
     }
