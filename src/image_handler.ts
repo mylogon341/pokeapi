@@ -23,5 +23,5 @@ export async function getImage(type: ImageSource, index: string): Promise<string
             break;
     }
 
-    return resolve("./node_modules/pokemon-sprites" + path)
+    return resolve("../node_modules/pokemon-sprites" + path)
 }
