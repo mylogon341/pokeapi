@@ -5,6 +5,7 @@ declare interface String {
     camelToPresentation(): string
     removeDashes(): string
     removeLinebreaks(): string
+    imageUrlToPath(): string
 }
 
 String.prototype.capitaliseFirstLetter = function () {
@@ -35,4 +36,8 @@ String.prototype.removeLinebreaks = function() {
     return this
     .replace(/\n/g, " ")
     .replace(/\f/g, " ")
+}
+
+String.prototype.imageUrlToPath = function() {
+    return this.split("https://raw.githubusercontent.com/PokeAPI/sprites/master")[1]
 }

@@ -1,5 +1,5 @@
 import express from "express";
-import { listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails, getMove } from "./requests"
+import { listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails, getMove, clearRedisCache } from "./requests"
 import { NameURL } from "./models/common"
 import { getImage, ImageSource } from "./image_handler";
 
@@ -37,8 +37,7 @@ function spammingPokemon(): Promise<Promise<void>[]> {
             return pokemon(p.id)
               .then(() => getEvolutionDetails(p.id))
               .then(() => getEncounterDetails(p.id))
-              .then(() => getImage(ImageSource.poke_image, `${p.id}`))
-              .then(() => console.log(`success ${p.id}`))
+              .then(() => undefined)
               .catch(e => {
                 console.error(`${e}\n${p.id}`)
               })
@@ -56,6 +55,12 @@ function spammingMoves(): Promise<void>[] {
       .catch(err => console.error(err))
   })
 }
+
+app.get('/clear-cache', (_req, res) => {
+  clearRedisCache(() => {
+    res.send(200)
+  })
+})
 
 app.get("/spam", (_req, res) => {
   res.send("triggered")

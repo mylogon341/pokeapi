@@ -1,8 +1,5 @@
-// import axios from "axios"
-
 import { setup, RedisStore } from 'axios-cache-adapter'
 import redis from 'redis'
-
 
 import { Ability } from "./models/ability"
 import { EncounterInfo, GameEncounters, sortEncounterDetails } from "./models/encounterDetail"
@@ -26,6 +23,10 @@ const api = setup({
         store // Pass `RedisStore` store to `axios-cache-adapter`
     }
 })
+
+function clearRedisCache(complete: () => void): void {
+    client.flushall('ASYNC', complete)
+}
 
 async function getAllAbilities(infos: AbilityInfo[]): Promise<Ability[]> {
     return new Promise((success, reject) => {
@@ -207,4 +208,4 @@ async function getAlolanPokemon(offset: number): Promise<BasicPokemon[]> {
     })
 }
 
-export { listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails, getMove }
+export { clearRedisCache, listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails, getMove }
