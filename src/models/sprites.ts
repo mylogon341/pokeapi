@@ -1,4 +1,15 @@
+// generation-i etc
+class GenerationGroup {
+    name: string
+    sprite_groups: SpriteGroup[]
 
+    constructor(name: string) {
+        this.name = name
+        this.sprite_groups = []
+    }
+}
+
+// red-blue etc
 class SpriteGroup {
     group_name: string
     sprites: SpriteItem[]
@@ -8,6 +19,7 @@ class SpriteGroup {
     }
 }
 
+// front-default etc
 class SpriteItem {
     url: string
     name: string
@@ -19,28 +31,53 @@ class SpriteItem {
 
 export class Sprites {
 
-    groups: SpriteGroup[]
+    groups: GenerationGroup[]
 
     constructor(body: Record<string, any>) {
         this.groups = []
-        this.groups.push(new SpriteGroup("Default"))
-
         const sprites = body.sprites
-        this.addImage("Official artwork", sprites.other["official-artwork"]["front_default"])
-        this.addImage("Back default", sprites["back_default"])
-        this.addImage("Back female", sprites["back_default_female"])
-        this.addImage("Back shiny", sprites["back_shiny"])
-        this.addImage("Back shiny female", sprites["back_shiny_female"])
-        this.addImage("Front default", sprites["front_default"])
-        this.addImage("Front female", sprites["front_female"])
-        this.addImage("Front shiny", sprites["front_shiny"])
-        this.addImage("Front shiny female", sprites["front_shiny_female"])
+
+        this.groups.push(new GenerationGroup("default"))
+        this.groups[0].sprite_groups.push(new SpriteGroup("default"))
+
+        this.getPairs("Default", sprites)
+    }
+
+    getPairs(name: string, obj: any): void {
+
+        if (name.includes("generation") || name.includes("other")) {
+            this.groups.push(new GenerationGroup(name.removeDashes().toUpperCase()))
+
+            Object.keys(obj).forEach(name => {
+                this.groups[this.groups.length - 1]
+                    .sprite_groups.push(new SpriteGroup(name.removeDashes().capitaliseEachWord()))
+
+                this.getPairs(name, obj[name])
+            })
+            return
+        }
+
+        Object.keys(obj).forEach(key => {
+            const value = obj[key]
+
+            if (typeof (value) == 'string') {
+                this.addImage(key, value)
+            } else if (typeof (value) == 'object' &&
+                value != null) {
+                this.getPairs(key, value)
+            }
+        })
     }
 
     addImage(name: string, url: string): void {
         const last = this.groups[this.groups.length - 1]
+        const lastGenGroup = last.sprite_groups
+        const lastSpriteGroup = lastGenGroup[lastGenGroup.length - 1]
         if (url != null && url != undefined) {
-            last.sprites.push(new SpriteItem(url, name))
+
+            lastSpriteGroup
+                .sprites
+                .push(new SpriteItem(url, name.camelToPresentation()))
         }
     }
 }
