@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import { resolve } from "path"
 import { pokemon } from './requests'
 
@@ -8,13 +9,12 @@ export enum ImageSource {
 }
 
 export async function getImage(type: ImageSource, index: string): Promise<string> {
-
-    const poke = await pokemon(index)
-    let path = ""
-
+    
     switch (type) {
         case ImageSource.poke_image:
-            path = poke
+            
+            const poke = await pokemon(index)
+            const path = poke
             .base
             .sprite
             .groups
@@ -25,17 +25,11 @@ export async function getImage(type: ImageSource, index: string): Promise<string
             .url
             .imageUrlToPath()
 
-            break;
+            return resolve("../node_modules/pokemon-sprites" + path)
         case ImageSource.poke_sprite:
-             path = poke.base.sprite.groups.filter(m => m.name == 'default')[0]
-             .sprite_groups[0]
-             .sprites.filter(m => m.name == "front default")[0]
-             .url
-             .imageUrlToPath()
-            break;
+            return resolve(`../node_modules/pokemon-sprites/sprites/pokemon/${index}.png`)
         case ImageSource.item_sprite:
             break;
     }
 
-    return resolve("../node_modules/pokemon-sprites" + path)
 }
