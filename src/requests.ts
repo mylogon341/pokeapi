@@ -10,7 +10,7 @@ import { Move } from './models/move'
 import { AbilityInfo, EvolutionChain, EvolutionDetail, Pokemon, PokemonSpecies, BasePokemon, BasicPokemon } from "./models/pokemon"
 
 const client = redis.createClient({
-    url: 'redis://192.168.2.14:6379'
+    url: 'redis://192.168.1.194:6379'
 })
 
 const store = new RedisStore(client)
