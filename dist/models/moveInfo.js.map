@@ -1,1 +1,0 @@
-{"version":3,"file":"moveInfo.js","sourceRoot":"","sources":["../../src/models/moveInfo.ts"],"names":[],"mappings":";;;AAAA,MAAa,QAAQ;IAGjB,YAAY,IAAS;QACjB,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC,IAAI,CAAC,YAAY,EAAE,CAAC,kBAAkB,EAAE,CAAA;QACzD,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC,IAAI,CAAC,IAAI,CAAC,YAAY,EAAE,CAAC,kBAAkB,EAAE,CAAA;IAClE,CAAC;CACJ;AAPD,4BAOC"}
