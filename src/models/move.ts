@@ -63,6 +63,7 @@ export class Move {
         this.description = data.effect_entries
             .find(e => NameURL.fromObj(e.language).name == "En")
             .effect
+
         this.type = NameURL.fromObj(data.type).name
         this.damage_class = NameURL.fromObj(data.damage_class).name
         this.power = data.power
@@ -80,6 +81,13 @@ export class Move {
         this.min_hits = meta.min_hits
         this.min_turns = meta.min_turns
         this.stat_chance = meta.stat_chance
+
+        this.swap_status_effect_values()
+    }
+
+    private swap_status_effect_values() {
+        this.description = this.description.replace('$effect_chance%',`${this.ailment_chance}%`);
+        this.description = this.description.replace('  /g', ' ')
     }
 
     private possiblyAdd(to: Record<string, string | number>[], key: string, val: string | number) {
