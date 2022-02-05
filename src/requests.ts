@@ -29,76 +29,38 @@ function clearRedisCache(complete: () => void): void {
 }
 
 async function getAllAbilities(infos: AbilityInfo[]): Promise<Ability[]> {
-    return new Promise((success, reject) => {
+    const returningValues: Ability[] = []
 
-        const returningValue: Ability[] = []
-        infos.forEach(info => {
-            api.get(`/ability/${info.id}`)
-                .then(response => new Ability(response.data, info.hidden))
-                .then(a => returningValue.push(a))
-                .then(() => {
-                    if (returningValue.length == infos.length) {
-                        success(returningValue)
-                    }
-                })
-                .catch(err => {
-                    console.error(err)
-                    reject(err)
-                })
-        })
-    })
+    for (const info of infos) {
+        const abilityRes = await api.get(`/ability/${info.id}`)
+        const ability = new Ability(abilityRes.data, info.hidden)
+        returningValues.push(ability)
+    }
+
+    return returningValues
 }
 
 async function pokemon(pokemon: string | number): Promise<Pokemon> {
-    let basePokemon: BasePokemon
-    let pokeSpecies: PokemonSpecies
-    let chainData: EvolutionChain
 
-    return new Promise((success, reject) => {
-        api.get(`/pokemon/${pokemon}`)
-            .then(body => new BasePokemon(body.data))
-            .then(base => {
-                basePokemon = base
-                return base.species_url
-            })
-            .then(speciesUrl => api.get(speciesUrl))
-            .then(speciesResponse => new PokemonSpecies(speciesResponse.data))
-            .then(species => {
-                pokeSpecies = species
-                return species.evolution_chain_url
-            })
-            .then(chainUrl => api.get(chainUrl))
-            .then(chainResponse => {
-                chainData = new EvolutionChain(chainResponse.data)
-                return getAllAbilities(basePokemon.ability_info)
-            })
-            .then(abilities => success(new Pokemon(basePokemon, pokeSpecies, chainData, abilities)))
-            .catch(err => {
-                console.error(err)
-                reject(err)
-            })
-    })
+    const pokeRes = await api.get(`/pokemon/${pokemon}`)
+    const basePoke = new BasePokemon(pokeRes.data)
+    const speciesRes = await api.get(basePoke.species_url)
+    const species = new PokemonSpecies(speciesRes.data)
+    const chainRes = await api.get(species.evolution_chain_url)
+    const evolutionChain = new EvolutionChain(chainRes.data)
+    const abilities = await getAllAbilities(basePoke.ability_info)
+    return new Pokemon(basePoke, species, evolutionChain, abilities)
 }
 
 async function getEvolutionDetails(pokemon: string | number): Promise<EvolutionDetails[]> {
-    let pokeIndex: number
-    return new Promise((success, reject) => {
-        api.get(`/pokemon/${pokemon}`)
-            .then(body => new BasePokemon(body.data))
-            .then(base => {
-                pokeIndex = base.id
-                return base.species_url
-            })
-            .then(url => api.get(url))
-            .then(res => new PokemonSpecies(res.data))
-            .then(species => api.get(species.evolution_chain_url))
-            .then(res => new EvolutionDetail(res.data, pokeIndex))
-            .then(eDetail => success(eDetail.detail ?? []))
-            .catch(err => {
-                console.error(err)
-                reject(err)
-            })
-    })
+    
+    const body = await api.get(`/pokemon/${pokemon}`)
+    const base = new BasePokemon(body.data)
+    const pokeIndex = base.id
+    const speciesRes = await api.get(base.species_url)
+    const species = new PokemonSpecies(speciesRes.data)
+    const evolutionRes = await api.get(species.evolution_chain_url)
+    return new EvolutionDetail(evolutionRes.data, pokeIndex).detail
 }
 
 //// Items
@@ -128,67 +90,38 @@ async function getItem(item: number | string): Promise<Item> {
 }
 
 async function getEncounterDetails(pokemon: number | string): Promise<GameEncounters[]> {
-    return new Promise((success, reject) => {
-        api.get(`/pokemon/${pokemon}/encounters`)
-            .then(body => body.data.map(d => new EncounterInfo(d)))
-            .then((info: EncounterInfo[]) => sortEncounterDetails(info))
-            .then(sorted => success(sorted))
-            .catch(err => {
-                console.error(err)
-                reject(err)
-            })
-    })
+
+    const encRes = await api.get(`/pokemon/${pokemon}/encounters`)
+    const info = encRes.data.map(d => new EncounterInfo(d))
+    return sortEncounterDetails(info)
 }
 
 ////
 async function listAll(): Promise<Generation[]> {
-    return new Promise((success, reject) => {
-
-        let returningGens: Generation[]
-
-        getAllGenerationData()
-            .then(gens => {
-                returningGens = gens
-                const offset = get_highest_index_number(gens)
-                return getAlolanPokemon(offset)
-            })
-            .then(pokes => {
-                const gen7 = returningGens.find(g => g.id == 7)
-                gen7.pokemon = gen7.pokemon.concat(pokes)
-                success(returningGens)
-            })
-            .catch(err => reject(err))
-    })
+    const allGens = await getAllGenerationData()
+    const offset = get_highest_index_number(allGens)
+    const alolanPoke = await getAlolanPokemon(offset)
+    const genSeven = allGens.find(g => g.id == 7)
+    genSeven.pokemon = genSeven.pokemon.concat(alolanPoke)
+    // allGens.find(g => g.id == 7).pokemon.concat(alolanPoke)
+    return allGens
 }
 
 async function getAllGenerationData(): Promise<Generation[]> {
-    return new Promise((success, reject) => {
-        api.get(`/generation`)
-            .then(body => new AllGenerations(body))
-            .then(gens => gens.generations)
-            .then(gens => gens.map(g => api.get(g.url)))
-            .then(gets => Promise.all(gets))
-            .then(responses => responses.map(r => r.data))
-            .then(datas => datas.map(d => new Generation(d)))
-            .then(gens => success(gens))
-            .catch(e => {
-                console.error(e)
-                reject(e)
-            })
-    })
+
+    const genRes = await api.get('/generation')
+    const allGens = new AllGenerations(genRes)
+    const genUrlPromises = allGens.generations.map(g => api.get(g.url))
+    const genResponses = await Promise.all(genUrlPromises)
+    const genData = genResponses.map(res => res.data)
+    return genData.map(data => new Generation(data))
 }
 
-async function getMove(move: string): Promise<Record<string, string | number>[]> {
-    return new Promise((success, reject) => {
-        api.get(`/move/${move}`)
-            .then(response => response.data)
-            .then(data => new Move(data))
-            .then(move => success(move.flattenedData()))
-            .catch(err => {
-                console.error(err)
-                reject(err)
-            })
-    })
+async function getMove(moveId: string): Promise<Record<string, string | number>[]> {
+
+    const moveRes = await api.get(`/move/${moveId}`)
+    const move = new Move(moveRes.data)
+    return move.flattenedData()
 }
 
 function get_highest_index_number(gens: Generation[]): number {
@@ -199,13 +132,10 @@ function get_highest_index_number(gens: Generation[]): number {
 }
 
 async function getAlolanPokemon(offset: number): Promise<BasicPokemon[]> {
-    return new Promise((success, reject) => {
-        api.get(`/pokemon?limit=1000&offset=${offset}`)
-            .then(response => response.data.results)
-            .then(pokemonData => pokemonData.map(p => new BasicPokemon(p)))
-            .then(pokes => success(pokes))
-            .catch(e => reject(e))
-    })
+
+    const alolanRes = await api.get(`/pokemon?limit=1000&offset=${offset}`)
+    const alolanResults = alolanRes.data.results
+    return alolanResults.map(data => new BasicPokemon(data))
 }
 
 export { clearRedisCache, listAll, pokemon, getEvolutionDetails, allItems, getItem, getEncounterDetails, getMove }
