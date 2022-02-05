@@ -64,7 +64,7 @@ class PokemonSpecies {
     growth_rate: NameURL
     dex_entry: string
     jap_name: string
-    roomaji_name: string
+    roomaji_name?: string
 
     constructor(body: Record<string, any>) {
         this.is_legendary = body.is_legendary
@@ -87,8 +87,8 @@ class PokemonSpecies {
 
         this.dex_entry = english.flavor_text.removeLinebreaks()
 
-        this.jap_name = body.names.find(v => v.language.name == "ja-Hrkt").name
-        this.roomaji_name = body.names.find(v => v.language.name == "roomaji").name
+        this.jap_name = body.names.find(v => v.language.name == "ja").name
+        this.roomaji_name = body.names.find(v => v.language.name == "roomaji")?.name
     }
 }
 
