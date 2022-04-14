@@ -10,6 +10,7 @@ export enum ImageSource {
 }
 
 export async function getImage(type: ImageSource, index: string): Promise<string> {
+    
     const nothing = '../node_modules/pokemon-sprites/sprites/items/poke-ball.png'
     let resolvePath = ""
 
@@ -30,9 +31,10 @@ export async function getImage(type: ImageSource, index: string): Promise<string
                 const path = sprite.url.imageUrlToPath()
                 resolvePath = "../node_modules/pokemon-sprites" + path
             }
-            
+            break
         case ImageSource.poke_sprite:
             resolvePath = `../node_modules/pokemon-sprites/sprites/pokemon/${index}.png`
+            break
         case ImageSource.item_sprite:
             break;
     }
