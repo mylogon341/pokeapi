@@ -59,9 +59,9 @@ class BasePokemon extends Clearable {
 class PokemonSpecies {
     is_mythical: boolean
     is_legendary: boolean
-    evolution_chain_url: string
+    evolution_chain_url?: string
     evolves_from: BasicPokemon
-    growth_rate: NameURL
+    growth_rate?: NameURL
     dex_entry: string
     jap_name: string
     roomaji_name?: string
@@ -69,24 +69,39 @@ class PokemonSpecies {
     constructor(body: Record<string, any>) {
         this.is_legendary = body.is_legendary
         this.is_mythical = body.is_mythical
-        this.evolution_chain_url = body.evolution_chain.url
+
+        if (body.evolution_chain != null) {
+            this.evolution_chain_url = body.evolution_chain.url
+        } else {
+            this.evolution_chain_url = null
+        }
         
         if (body.evolves_from_species) {
             this.evolves_from = new BasicPokemon(body.evolves_from_species)
         }
         
-        this.growth_rate = NameURL.fromObj(body.growth_rate)
-        this.growth_rate.name = this.growth_rate.name.capitaliseEachWord()
+        if (body.growth_rate != null) {
+            this.growth_rate = NameURL.fromObj(body.growth_rate)
+            this.growth_rate.name = this.growth_rate.name.capitaliseEachWord()
+        } else {
+            this.growth_rate = null
+        }
 
         const descriptions: Record<string, any>[] = body.flavor_text_entries
-        const english = descriptions
-        .filter(i => i.language.name === "en")
-        .sort((a, b) => {
-            return a.version.url.versionNumberFromUrl() - b.version.url.versionNumberFromUrl()
-        })[0]
 
-        this.dex_entry = english.flavor_text.removeLinebreaks()
+        if (descriptions.length > 0) {
 
+            const english = descriptions
+            .filter(i => i.language.name === "en")
+            .sort((a, b) => {
+                return a.version.url.versionNumberFromUrl() - b.version.url.versionNumberFromUrl()
+            })[0]
+            
+            this.dex_entry = english.flavor_text.removeLinebreaks()
+        } else {
+            this.dex_entry = "No pokédex entry provided yet"
+        }
+        
         this.jap_name = body.names.find(v => v.language.name == "ja").name
         this.roomaji_name = body.names.find(v => v.language.name == "roomaji")?.name
     }
@@ -157,10 +172,10 @@ class Pokemon {
     chain: BasicPokemon[]
     abilities: Ability[]
 
-    constructor(base: BasePokemon, species: PokemonSpecies, chain: EvolutionChain, abilities: Ability[]) {
+    constructor(base: BasePokemon, species: PokemonSpecies, abilities: Ability[], chain?: EvolutionChain) {
         this.base = base
         this.species = species
-        this.chain = chain.pokemons
+        this.chain = chain?.pokemons ?? []
         this.abilities = abilities
 
         const clearCheck = (i: any): i is Clearable => i.clear !== undefined
