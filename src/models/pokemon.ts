@@ -132,11 +132,12 @@ function flattenChain<T>(chains: Chain[], prop: (Chain) => any): T[] {
     }, [])
 }
 
-class EvolutionChain {
+class EvolutionChain extends Clearable {
 
     pokemons: BasicPokemon[]
 
     constructor(body) {
+        super()
         const evo = new Chain(body.chain)
         this.pokemons = flattenChain<BasicPokemon>(evo.to, x => x.species)
         this.pokemons.push(evo.species)
@@ -169,19 +170,19 @@ class EvolutionDetail {
 class Pokemon {
     base: BasePokemon
     species: PokemonSpecies
-    chain: BasicPokemon[]
+    chain?: BasicPokemon[]
     abilities: Ability[]
 
     constructor(base: BasePokemon, species: PokemonSpecies, abilities: Ability[], chain?: EvolutionChain) {
         this.base = base
         this.species = species
-        this.chain = chain?.pokemons ?? []
+        this.chain = chain?.pokemons
         this.abilities = abilities
 
         const clearCheck = (i: any): i is Clearable => i.clear !== undefined
         const properties = [this.base, this.species, this.chain, this.abilities]
         properties.forEach(a => {
-            if (clearCheck(a)) {
+            if (a != undefined && clearCheck(a)) {
                 a.clear()
             }
         })

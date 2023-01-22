@@ -97,8 +97,9 @@ function flattenChain(chains, prop) {
         return acc;
     }, []);
 }
-class EvolutionChain {
+class EvolutionChain extends Clearable {
     constructor(body) {
+        super();
         const evo = new Chain(body.chain);
         this.pokemons = flattenChain(evo.to, x => x.species);
         this.pokemons.push(evo.species);
@@ -123,15 +124,14 @@ class EvolutionDetail {
 exports.EvolutionDetail = EvolutionDetail;
 class Pokemon {
     constructor(base, species, abilities, chain) {
-        var _a;
         this.base = base;
         this.species = species;
-        this.chain = (_a = chain === null || chain === void 0 ? void 0 : chain.pokemons) !== null && _a !== void 0 ? _a : [];
+        this.chain = chain === null || chain === void 0 ? void 0 : chain.pokemons;
         this.abilities = abilities;
         const clearCheck = (i) => i.clear !== undefined;
         const properties = [this.base, this.species, this.chain, this.abilities];
         properties.forEach(a => {
-            if (clearCheck(a)) {
+            if (a != undefined && clearCheck(a)) {
                 a.clear();
             }
         });

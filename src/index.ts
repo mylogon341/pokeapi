@@ -75,7 +75,7 @@ app.get("/pokemon/:number", (req, res) => {
 
   pokemon(req.params.number)
     .then(poke => res.json(poke))
-    .catch(err => res.status(500).json(err))
+    .catch(err => res.sendStatus(500).json(err))
 })
 
 app.get("/evolution-details/:number", (req, res) => {
