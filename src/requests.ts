@@ -53,7 +53,7 @@ async function pokemon(pokemon: string | number): Promise<Pokemon> {
         const chainRes = await api.get(species.evolution_chain_url)
         evolution_chain = new EvolutionChain(chainRes.data)
     }
-    
+
     const abilities = await getAllAbilities(basePoke.ability_info)
     return new Pokemon(basePoke, species, abilities, evolution_chain)
 }
@@ -65,6 +65,9 @@ async function getEvolutionDetails(pokemon: string | number): Promise<EvolutionD
     const pokeIndex = base.id
     const speciesRes = await api.get(base.species_url)
     const species = new PokemonSpecies(speciesRes.data)
+    if (species.evolution_chain_url == null) {
+        return []
+    }
     const evolutionRes = await api.get(species.evolution_chain_url)
     return new EvolutionDetail(evolutionRes.data, pokeIndex).detail
 }

@@ -26,7 +26,7 @@ function getImage(type, index) {
         let resolvePath = "";
         switch (type) {
             case ImageSource.poke_image:
-                const poke = yield (0, requests_1.pokemon)(index);
+                const poke = yield requests_1.pokemon(index);
                 const sprite = poke
                     .base
                     .sprite
@@ -46,11 +46,11 @@ function getImage(type, index) {
             case ImageSource.item_sprite:
                 break;
         }
-        if (resolvePath != "" && (0, fs_1.existsSync)(resolvePath)) {
-            return (0, path_1.resolve)(resolvePath);
+        if (resolvePath != "" && fs_1.existsSync(resolvePath)) {
+            return path_1.resolve(resolvePath);
         }
         else {
-            return (0, path_1.resolve)(nothing);
+            return path_1.resolve(nothing);
         }
     });
 }

@@ -7,7 +7,7 @@ const express_1 = __importDefault(require("express"));
 const requests_1 = require("./requests");
 const common_1 = require("./models/common");
 const image_handler_1 = require("./image_handler");
-const app = (0, express_1.default)();
+const app = express_1.default();
 const port = 8081; // default port to listen
 app.use(express_1.default.json());
 app.get("/reachability", (_, res) => res.json());
@@ -19,20 +19,20 @@ app.get("/type-charts", (_, res) => {
     ]);
 });
 app.get("/pokemon", (_, res) => {
-    (0, requests_1.listAll)()
+    requests_1.listAll()
         .then(pokemon => {
         res.json(pokemon);
     }).catch(err => res.json(err));
 });
 function spammingPokemon() {
     return new Promise((res, _) => {
-        (0, requests_1.listAll)()
+        requests_1.listAll()
             .then(gens => {
             gens.forEach(g => {
                 res(g.pokemon.map(p => {
-                    return (0, requests_1.pokemon)(p.id)
-                        .then(() => (0, requests_1.getEvolutionDetails)(p.id))
-                        .then(() => (0, requests_1.getEncounterDetails)(p.id))
+                    return requests_1.pokemon(p.id)
+                        .then(() => requests_1.getEvolutionDetails(p.id))
+                        .then(() => requests_1.getEncounterDetails(p.id))
                         .then(() => undefined)
                         .catch(e => {
                         console.error(`${e}\n${p.id}`);
@@ -44,13 +44,13 @@ function spammingPokemon() {
 }
 function spammingMoves() {
     return [...Array(850)].map(n => {
-        return (0, requests_1.getMove)(n)
+        return requests_1.getMove(n)
             .then(() => console.log(`got move ${n}`))
             .catch(err => console.error(err));
     });
 }
 app.get('/clear-cache', (_req, res) => {
-    (0, requests_1.clearRedisCache)(() => {
+    requests_1.clearRedisCache(() => {
         res.send(200);
     });
 });
@@ -63,32 +63,32 @@ app.get("/spam", (_req, res) => {
         .then(() => console.log("complete!"));
 });
 app.get("/pokemon/:number", (req, res) => {
-    (0, requests_1.pokemon)(req.params.number)
+    requests_1.pokemon(req.params.number)
         .then(poke => res.json(poke))
         .catch(err => res.status(500).json(err));
 });
 app.get("/evolution-details/:number", (req, res) => {
-    (0, requests_1.getEvolutionDetails)(req.params.number)
+    requests_1.getEvolutionDetails(req.params.number)
         .then(detail => res.json(detail))
         .catch(err => res.status(500).json(err));
 });
 app.get("/encounters/:number", (req, res) => {
-    (0, requests_1.getEncounterDetails)(req.params.number)
+    requests_1.getEncounterDetails(req.params.number)
         .then(information => res.json(information))
         .catch(err => res.status(500).json(err));
 });
 app.get("/items", (_, res) => {
-    (0, requests_1.allItems)()
+    requests_1.allItems()
         .then(body => res.json(body))
         .catch(err => res.status(500).json(err));
 });
 app.get("/item/:number", (req, res) => {
-    (0, requests_1.getItem)(req.params.number)
+    requests_1.getItem(req.params.number)
         .then(body => res.json(body))
         .catch(err => res.status(500).json(err));
 });
 app.get("/move/:id", (req, res) => {
-    (0, requests_1.getMove)(req.params.id)
+    requests_1.getMove(req.params.id)
         .then(flatData => res.json(flatData))
         .catch(err => res.status(500).send(err));
 });
@@ -105,7 +105,7 @@ app.get("/image/:type/:index", (req, res) => {
             type = image_handler_1.ImageSource.poke_image;
             break;
     }
-    (0, image_handler_1.getImage)(type, req.params.index)
+    image_handler_1.getImage(type, req.params.index)
         .then(path => res.sendFile(path))
         .catch(err => {
         console.error(err);

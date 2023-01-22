@@ -25,7 +25,7 @@ const client = redis_1.default.createClient({
     url: 'redis://192.168.1.194:6379'
 });
 const store = new axios_cache_adapter_1.RedisStore(client);
-const api = (0, axios_cache_adapter_1.setup)({
+const api = axios_cache_adapter_1.setup({
     // `axios` options
     baseURL: 'https://pokeapi.co/api/v2',
     // `axios-cache-adapter` options
@@ -72,6 +72,9 @@ function getEvolutionDetails(pokemon) {
         const pokeIndex = base.id;
         const speciesRes = yield api.get(base.species_url);
         const species = new pokemon_1.PokemonSpecies(speciesRes.data);
+        if (species.evolution_chain_url == null) {
+            return [];
+        }
         const evolutionRes = yield api.get(species.evolution_chain_url);
         return new pokemon_1.EvolutionDetail(evolutionRes.data, pokeIndex).detail;
     });
@@ -109,7 +112,7 @@ function getEncounterDetails(pokemon) {
     return __awaiter(this, void 0, void 0, function* () {
         const encRes = yield api.get(`/pokemon/${pokemon}/encounters`);
         const info = encRes.data.map(d => new encounterDetail_1.EncounterInfo(d));
-        return (0, encounterDetail_1.sortEncounterDetails)(info);
+        return encounterDetail_1.sortEncounterDetails(info);
     });
 }
 exports.getEncounterDetails = getEncounterDetails;
