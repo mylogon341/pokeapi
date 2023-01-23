@@ -107,7 +107,13 @@ async function getEncounterDetails(pokemon: number | string): Promise<GameEncoun
 
 ////
 async function listAll(): Promise<Generation[]> {
-    return await getAllGenerationData()
+    const allGens = await getAllGenerationData()
+    const offset = get_highest_index_number(allGens)
+    const alolanPoke = await getAlolanPokemon(offset)
+    const genSeven = allGens.find(g => g.id == 7)
+    genSeven.pokemon = genSeven.pokemon.concat(alolanPoke)
+    // allGens.find(g => g.id == 7).pokemon.concat(alolanPoke)
+    return allGens
 }
 
 async function getAllGenerationData(): Promise<Generation[]> {
