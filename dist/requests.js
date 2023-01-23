@@ -119,13 +119,7 @@ exports.getEncounterDetails = getEncounterDetails;
 ////
 function listAll() {
     return __awaiter(this, void 0, void 0, function* () {
-        const allGens = yield getAllGenerationData();
-        const offset = get_highest_index_number(allGens);
-        const alolanPoke = yield getAlolanPokemon(offset);
-        const genSeven = allGens.find(g => g.id == 7);
-        genSeven.pokemon = genSeven.pokemon.concat(alolanPoke);
-        // allGens.find(g => g.id == 7).pokemon.concat(alolanPoke)
-        return allGens;
+        return yield getAllGenerationData();
     });
 }
 exports.listAll = listAll;
