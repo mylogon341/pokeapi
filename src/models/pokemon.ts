@@ -7,6 +7,9 @@ import { BasicMove } from "./move"
 import { NameURL } from "./common"
 import { Sprites } from "./sprites"
 
+import lookupCSV from "lookup-csv"
+const lookupTable = lookupCSV('poke_ipa.csv', 'id')
+
 class Clearable {
     clear(): void { console.log("empty implementation") }
 }
@@ -21,11 +24,16 @@ class BasicPokemon {
     }
 }
 
+function getIpaName (id: number): string {
+    return lookupTable.get(id).ipa
+}
+
 type AbilityInfo = { id: number, hidden: boolean }
 
 class BasePokemon extends Clearable {
     id: number
     name: string
+    ipa_name?: string
     moves: BasicMove[]
     species_url: string | null
     sprite: Sprites
@@ -36,6 +44,8 @@ class BasePokemon extends Clearable {
     constructor(body: Record<string, any>) {
         super()
         this.id = body.id
+        this.ipa_name = getIpaName(this.id)
+
         this.moves = body.moves.map(m => new BasicMove(m))
         this.name = body.name.removeDashes().capitaliseEachWord()
         this.species_url = body.species.url

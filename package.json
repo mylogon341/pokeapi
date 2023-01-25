@@ -30,6 +30,7 @@
     "axios-cache-adapter": "^2.7.0",
     "express": "^4.17.1",
     "image-downloader": "^4.0.2",
+    "lookup-csv": "^1.1.0",
     "md5": "^2.3.0",
     "pokemon-sprites": "github:mylogon341/sprites",
     "redis": "^3.0.2"

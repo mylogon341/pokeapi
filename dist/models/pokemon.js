@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BasePokemon = exports.EvolutionDetail = exports.EvolutionChain = exports.PokemonSpecies = exports.Pokemon = exports.BasicPokemon = void 0;
 const stats_1 = require("./stats");
@@ -8,6 +11,8 @@ const evolutionDetails_1 = require("./evolutionDetails");
 const move_1 = require("./move");
 const common_1 = require("./common");
 const sprites_1 = require("./sprites");
+const lookup_csv_1 = __importDefault(require("lookup-csv"));
+const lookupTable = (0, lookup_csv_1.default)('poke_ipa.csv', 'id');
 class Clearable {
     clear() { console.log("empty implementation"); }
 }
@@ -18,10 +23,14 @@ class BasicPokemon {
     }
 }
 exports.BasicPokemon = BasicPokemon;
+function getIpaName(id) {
+    return lookupTable.get(id).ipa;
+}
 class BasePokemon extends Clearable {
     constructor(body) {
         super();
         this.id = body.id;
+        this.ipa_name = getIpaName(this.id);
         this.moves = body.moves.map(m => new move_1.BasicMove(m));
         this.name = body.name.removeDashes().capitaliseEachWord();
         this.species_url = body.species.url;
